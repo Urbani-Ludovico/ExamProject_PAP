@@ -5,3 +5,6 @@ COMPILER_FLAGS=-std=c18 ${COMPILER_ERROR_FLAGS}
 BUILD_PATH=./build/
 PARTIAL_BUILD_PATH=${BUILD_PATH}includes/
 
+.PHONY: clean
+clean:
+	find ${BUILD_PATH} -type f -not -name ".gitignore" -exec rm {} +

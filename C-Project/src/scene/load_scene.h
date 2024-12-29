@@ -5,6 +5,8 @@
 #ifndef LOAD_SCENE_H
 #define LOAD_SCENE_H
 
-void load_scene();
+#include "scene.h"
+
+Scene load_scene(const char * scene_path);
 
 #endif

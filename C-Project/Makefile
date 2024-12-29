@@ -3,24 +3,43 @@ COMPILER = gcc
 COMPILER_ERROR_FLAGS = -Wall -Wextra -Wpedantic -Werror
 COMPILER_FLAGS = -O3 -std=c18 ${COMPILER_ERROR_FLAGS}
 
+#
+# COMPILE
+#
+
 all: build/main
 
-build/main: build/includes/main.o build/includes/argv_tools.o
+build/main: build/includes/main.o build/includes/argv_tools.o build/includes/load_scene.o build/includes/scene.o
 	${COMPILER} $^ -o $@
 
-build/includes/main.o: src/main.c build/includes/argv_tools.o build/includes/load_scene.o build/includes/scene.o
+build/includes/argv_tools.o: src/tools/argv_tools.c src/tools/argv_tools.h src/tools/logs.h
+	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@
+
+build/includes/main.o: src/main.c src/scene/load_scene.h src/scene/scene.h src/tools/argv_tools.h
+	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@
+
+build/includes/load_scene.o: src/scene/load_scene.c src/scene/load_scene.h src/scene/scene.h src/tools/logs.h
 	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@
 
 build/includes/scene.o: src/scene/scene.c src/scene/scene.h src/tools/logs.h
 	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@
 
-build/includes/load_scene.o: src/scene/load_scene.c src/scene/load_scene.h build/includes/scene.o src/tools/logs.h
-	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@
+#
+# TESTS
+#
 
-build/includes/argv_tools.o: src/tools/argv_tools.c src/tools/argv_tools.h src/tools/logs.h
-	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@
+.PHONY: test
+test: t1
+
+.PHONY: t1
+t1: build/main tests/t1.txt
+	build/main tests/t1.txt tests/t1_1920x1080.ppm 1920 1080
+
+#
+# CLEAN
+#
 
 .PHONY: clean
 clean:
-	@ find build/ -type f -not -name ".gitignore" -exec rm {} +
+	@ find "build/" -type f -not -name ".gitignore" -exec rm {} \;
 	@ echo Clean project!

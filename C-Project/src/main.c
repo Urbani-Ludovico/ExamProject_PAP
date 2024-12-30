@@ -26,12 +26,14 @@ int main(const int argc, const char* argv[]) {
     printf("\tScene file: %s\n\tOutput file: %s\n\tImage size: %u x %u\n", scene_path, out_path, image_width, image_height);
 
     const Scene scene = load_scene(scene_path);
-    scene_destroy(scene);
 
     FILE* ppm;
     ppm_init(out_path, image_width, image_height, &ppm);
 
+    scene_destroy(scene);
     ppm_end(ppm);
+
+    printf("done.\n");
 
     return 0;
 }

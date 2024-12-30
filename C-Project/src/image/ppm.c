@@ -6,6 +6,13 @@
 #include <stdlib.h>
 #include <sys/mman.h>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+
 #include "../tools/argv_tools.h"
 #include "../tools/logs.h"
 
@@ -24,9 +31,13 @@ void ppm_init(const char* out_path, const image_size_t width, const image_size_t
     fprintf(file, "P6\n%d %d\n255\n", width, height);
     fflush(file);
 
+    int fd = fileno(file);
+    printf("%d\n", fd);
+
     *file_out = file;
 }
 
 void ppm_end(FILE* file) {
+    printf(LOG_STEP("Closing ppm file"));
     fclose(file);
 }

@@ -5,10 +5,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "load_scene.h"
-
+#include "scene.h"
 #include "../tools/logs.h"
 
+#include "load_scene.h"
 
 Scene load_scene(const char* scene_path) {
     printf(LOG_STEP("Opening scene file"));

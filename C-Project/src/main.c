@@ -28,10 +28,11 @@ int main(const int argc, const char* argv[]) {
     const Scene scene = load_scene(scene_path);
 
     FILE* ppm;
-    ppm_init(out_path, image_width, image_height, &ppm);
+    uint8_t * ppm_data;
+    const unsigned int ppm_data_size = ppm_init(out_path, image_width, image_height, &ppm, &ppm_data);
 
     scene_destroy(scene);
-    ppm_end(ppm);
+    ppm_end(ppm, ppm_data, ppm_data_size);
 
     printf("done.\n");
 

@@ -13,7 +13,7 @@
 #include "ppm.h"
 
 
-void ppm_init(const char* out_path, const image_size_t width, const image_size_t height, FILE** file_out) {
+unsigned int ppm_init(const char* out_path, const image_size_t width, const image_size_t height, FILE** file_out, uint8_t ** data_out) {
     printf(LOG_STEP("Opening ppm file"));
 
     FILE* file = fopen(out_path, "wb");
@@ -35,10 +35,20 @@ void ppm_init(const char* out_path, const image_size_t width, const image_size_t
         exit(7);
     }
 
+    uint8_t * data = mmap(NULL, width * height * 3 * sizeof(uint8_t), PROT_WRITE, MAP_SHARED, fd, ftell(file));
+    if (data == MAP_FAILED) {
+        printf(LOG_ERROR("Memomry Map Failed", "Function mmap returns a MAP_FAILED."));
+        exit(9);
+    }
+
     *file_out = file;
+    *data_out = data;
+
+    return width * height * 3 + ftell(file);
 }
 
-void ppm_end(FILE* file) {
+void ppm_end(FILE* file, uint8_t * data, const unsigned int data_size) {
     printf(LOG_STEP("Closing ppm file"));
+    munmap(data, data_size * sizeof(uint8_t));
     fclose(file);
 }

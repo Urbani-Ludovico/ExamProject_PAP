@@ -33,4 +33,7 @@ struct _Scene {
 };
 typedef struct _Scene * Scene;
 
+Scene scene_init();
+void scene_destroy(Scene scene);
+
 #endif

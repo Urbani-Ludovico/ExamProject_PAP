@@ -23,7 +23,7 @@ int main(const int argc, const char * argv[]) {
     // const image_size_t image_height = argv_parse_size(argv[4]);
 
     const Scene scene = load_scene(scene_path);
-    free(scene);
+    scene_destroy(scene);
 
     return 0;
 }

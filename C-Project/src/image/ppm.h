@@ -9,7 +9,7 @@
 
 typedef unsigned char* ppm_t;
 
-unsigned int ppm_init(const char* out_path, image_size_t width, image_size_t height, FILE** file_out, uint8_t** data_out);
-void ppm_end(FILE* file, uint8_t* data, unsigned int data_size);
+size_t ppm_init(const char* out_path, image_size_t width, image_size_t height, FILE** file_out, uint8_t** data_out);
+void ppm_end(FILE* file, uint8_t* data, size_t data_size);
 
 #endif

@@ -10,6 +10,7 @@
 
 #include "load_scene.h"
 
+
 Scene load_scene(const char* scene_path) {
     printf(LOG_STEP("Opening scene file"));
     FILE* file = fopen(scene_path, "r");

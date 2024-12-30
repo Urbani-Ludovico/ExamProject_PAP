@@ -13,7 +13,7 @@
 #include "ppm.h"
 
 
-unsigned int ppm_init(const char* out_path, const image_size_t width, const image_size_t height, FILE** file_out, uint8_t ** data_out) {
+unsigned int ppm_init(const char* out_path, const image_size_t width, const image_size_t height, FILE** file_out, uint8_t** data_out) {
     printf(LOG_STEP("Opening ppm file"));
 
     FILE* file = fopen(out_path, "wb");
@@ -35,7 +35,7 @@ unsigned int ppm_init(const char* out_path, const image_size_t width, const imag
         exit(7);
     }
 
-    uint8_t * data = mmap(NULL, width * height * 3 * sizeof(uint8_t), PROT_WRITE, MAP_SHARED, fd, ftell(file));
+    uint8_t* data = mmap(NULL, width * height * 3 * sizeof(uint8_t), PROT_WRITE, MAP_SHARED, fd, ftell(file));
     if (data == MAP_FAILED) {
         printf(LOG_ERROR("Memomry Map Failed", "Function mmap returns a MAP_FAILED."));
         exit(9);
@@ -47,7 +47,8 @@ unsigned int ppm_init(const char* out_path, const image_size_t width, const imag
     return width * height * 3 + ftell(file);
 }
 
-void ppm_end(FILE* file, uint8_t * data, const unsigned int data_size) {
+
+void ppm_end(FILE* file, uint8_t* data, const unsigned int data_size) {
     printf(LOG_STEP("Closing ppm file"));
     munmap(data, data_size * sizeof(uint8_t));
     fclose(file);

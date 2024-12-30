@@ -54,14 +54,16 @@ Scene load_scene(const char* scene_path) {
     }
 
     for (unsigned int i = 0; i < scene->objects_count; i++) {
+        printf("\tObject #%u:\n", i);
         if (fscanf(file, "S %f %f %f %f %u %u %u\n", &scene->objects[i]->x, &scene->objects[i]->y, &scene->objects[i]->z, &scene->objects[i]->radius, &r, &g, &b) != 7) {
             printf(LOG_ERROR("Malformed scene file", "Can not read object %u\n"), i);
             exit(5);
         }
-        scene->objects[i]->background_red = (uint8_t)r;
-        scene->objects[i]->background_green = (uint8_t)g;
-        scene->objects[i]->background_blue = (uint8_t)b;
-        printf("\tSphere: x = %f, y = %f, z = %f, radius = %f, background[RGB] = (%u, %u, %u)\n", scene->objects[i]->x, scene->objects[i]->y, scene->objects[i]->z, scene->objects[i]->radius, scene->objects[i]->background_red, scene->objects[i]->background_green, scene->objects[i]->background_blue);
+        printf("1");
+        scene->objects[i]->color_red = (uint8_t)r;
+        scene->objects[i]->color_green = (uint8_t)g;
+        scene->objects[i]->color_blue = (uint8_t)b;
+        printf("\tSphere: x = %f, y = %f, z = %f, radius = %f, background[RGB] = (%u, %u, %u)\n", scene->objects[i]->x, scene->objects[i]->y, scene->objects[i]->z, scene->objects[i]->radius, scene->objects[i]->color_red, scene->objects[i]->color_green, scene->objects[i]->color_blue);
     }
 
     fclose(file);

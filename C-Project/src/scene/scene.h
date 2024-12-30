@@ -13,9 +13,9 @@ struct _SceneObject {
     float z;
     float radius;
 
-    uint8_t background_red;
-    uint8_t background_green;
-    uint8_t background_blue;
+    uint8_t color_red;
+    uint8_t color_green;
+    uint8_t color_blue;
 };
 typedef struct _SceneObject * SceneObject;
 

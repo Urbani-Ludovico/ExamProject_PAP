@@ -22,14 +22,17 @@ void ppm_init(const char* out_path, const image_size_t width, const image_size_t
         exit(4);
     }
 
-    fprintf(file, "P6\n%d %d\n255\n", width, height);
+    if (fprintf(file, "P6\n%d %d\n255\n", width, height) < 0) {
+        printf(LOG_ERROR("Write Error", "Error while writing data to file."));
+        exit(8);
+    }
     fflush(file);
 
-    int fd = fileno(file);
+    const int fd = fileno(file);
 
     if (ftruncate(fd, width * height * 3 + ftell(file)) < 0) {
-        printf(LOG_ERROR("Trucate Error", "ftruncate on ppm file returns and error"));
-        exit(4);
+        printf(LOG_ERROR("Trucate Error", "ftruncate on ppm file returns and error."));
+        exit(7);
     }
 
     *file_out = file;

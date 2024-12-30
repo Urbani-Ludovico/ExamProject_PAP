@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "image/ppm.h"
+#include "raytrace.h"
 #include "scene/load_scene.h"
 #include "scene/scene.h"
 #include "tools/argv_tools.h"
@@ -30,6 +31,8 @@ int main(const int argc, const char* argv[]) {
     FILE* ppm;
     uint8_t* ppm_data;
     const size_t ppm_data_size = ppm_init(out_path, image_width, image_height, &ppm, &ppm_data);
+
+    raytrace(ppm_data, scene, image_width, image_height);
 
     scene_destroy(scene);
     ppm_end(ppm, ppm_data, ppm_data_size);

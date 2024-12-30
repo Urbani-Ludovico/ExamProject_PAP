@@ -14,8 +14,6 @@ Scene load_scene(const char* scene_path) {
     printf(LOG_STEP("Opening scene file"));
     FILE* file = fopen(scene_path, "r");
 
-    printf(LOG_STEP("Loading scene parameters"));
-
     if (file == NULL) {
         printf(LOG_ERROR("IO Error", "Unable to open file."));
         exit(4);
@@ -23,6 +21,8 @@ Scene load_scene(const char* scene_path) {
 
     const Scene scene = scene_init();
 
+    printf(LOG_STEP("Loading scene parameters"));
+    
     if (fscanf(file, "VP %f %f %f\n", &scene->viewport_x, &scene->viewport_y, &scene->viewport_z) != 3) {
         printf(LOG_ERROR("Malformed scene file", "Can not read viewport data at line 1"));
         scene_destroy(scene);

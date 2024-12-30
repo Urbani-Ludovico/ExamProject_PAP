@@ -18,10 +18,10 @@ build/includes/argv_tools.o: src/tools/argv_tools.c src/tools/argv_tools.h src/t
 build/includes/load_scene.o: src/scene/load_scene.c src/scene/load_scene.h src/scene/scene.h src/tools/logs.h
 	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@
 
-build/includes/main.o: src/main.c src/scene/load_scene.h src/scene/scene.h src/tools/argv_tools.h
+build/includes/main.o: src/main.c src/image/ppm.h src/scene/load_scene.h src/scene/scene.h src/tools/argv_tools.h src/tools/logs.h
 	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@
 
-build/includes/ppm.o: src/image/ppm.c src/image/ppm.h
+build/includes/ppm.o: src/image/ppm.c src/image/ppm.h src/tools/argv_tools.h src/tools/logs.h
 	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@
 
 build/includes/scene.o: src/scene/scene.c src/scene/scene.h src/tools/logs.h

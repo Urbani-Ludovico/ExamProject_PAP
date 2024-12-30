@@ -25,6 +25,7 @@ Scene load_scene(const char* scene_path) {
 
     if (fscanf(file, "VP %f %f %f\n", &scene->viewport_x, &scene->viewport_y, &scene->viewport_z) != 3) {
         printf(LOG_ERROR("Malformed scene file", "Can not read viewport data at line 1"));
+        scene_destroy(scene);
         exit(5);
     }
     printf("\tViewport: width = %f, height = %f, distance = %f\n", scene->viewport_x, scene->viewport_y, scene->viewport_z);
@@ -32,6 +33,7 @@ Scene load_scene(const char* scene_path) {
     unsigned int r, g, b;
     if (fscanf(file, "BG %u %u %u\n", &r, &g, &b) != 3) {
         printf(LOG_ERROR("Malformed scene file", "Can not read background data at line 2"));
+        scene_destroy(scene);
         exit(5);
     }
     scene->background_red = (uint8_t)r;
@@ -41,6 +43,7 @@ Scene load_scene(const char* scene_path) {
 
     if (fscanf(file, "OBJ_N %u\n", &scene->objects_count) != 1) {
         printf(LOG_ERROR("Malformed scene file", "Can not read objects number at line 3"));
+        scene_destroy(scene);
         exit(5);
     }
     printf("\tObjects count: %u\n", scene->objects_count);
@@ -49,15 +52,22 @@ Scene load_scene(const char* scene_path) {
 
     scene->objects = (SceneObject*)calloc(scene->objects_count, sizeof(SceneObject));
     if (scene->objects == NULL) {
-        printf(LOG_ERROR("Allocation error", "Failed to allocate memory for scene objects.\n"));
+        printf(LOG_ERROR("Allocation error", "Failed to allocate memory for scene objects."));
+        scene_destroy(scene);
         exit(6);
     }
 
     for (unsigned int i = 0; i < scene->objects_count; i++) {
         scene->objects[i] = (SceneObject)malloc(sizeof(struct _SceneObject));
+        if (scene->objects[i] == NULL) {
+            printf(LOG_ERROR("Allocation error", "Failed to allocate memory for scene object %u."), i + 1);
+            scene_destroy(scene);
+            exit(6);
+        }
 
         if (fscanf(file, "S %f %f %f %f %u %u %u\n", &scene->objects[i]->x, &scene->objects[i]->y, &scene->objects[i]->z, &scene->objects[i]->radius, &r, &g, &b) != 7) {
-            printf(LOG_ERROR("Malformed scene file", "Can not read object %u\n"), i + 1);
+            printf(LOG_ERROR("Malformed scene file", "Can not read object %u."), i + 1);
+            scene_destroy(scene);
             exit(5);
         }
         scene->objects[i]->color_red = (uint8_t)r;

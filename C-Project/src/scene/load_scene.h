@@ -7,6 +7,6 @@
 
 #include "scene.h"
 
-Scene load_scene(const char * scene_path);
+Scene load_scene(const char* scene_path);
 
 #endif

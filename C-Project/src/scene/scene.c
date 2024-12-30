@@ -10,7 +10,7 @@
 #include "scene.h"
 
 Scene scene_init() {
-    printf(LOG_STEP("Init scene"));
+    printf(LOG_STEP("Initializing scene"));
     const Scene scene = (Scene)malloc(sizeof(struct _Scene));
 
     if (scene == NULL) {
@@ -25,7 +25,7 @@ Scene scene_init() {
 }
 
 void scene_destroy(const Scene scene) {
-    printf(LOG_STEP("Destroy scene"));
+    printf(LOG_STEP("Destroying scene"));
     if (scene != NULL) {
         if (scene->objects != NULL) {
             for (unsigned int i = 0; i < scene->objects_count; i++) {

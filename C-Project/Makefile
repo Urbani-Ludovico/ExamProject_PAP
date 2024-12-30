@@ -33,7 +33,10 @@ test: t1
 
 .PHONY: t1
 t1: build/main tests/t1.txt
-	build/main tests/t1.txt tests/t1_1920x1080.ppm 1920 1080
+	@ echo ""
+	@ echo "- - - Test 1 - - -"
+	@ echo ""
+	@ build/main tests/t1.txt tests/t1_1920x1080.ppm 1920 1080
 
 #
 # CLEAN

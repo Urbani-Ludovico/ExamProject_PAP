@@ -47,23 +47,23 @@ Scene load_scene(const char* scene_path) {
 
     printf(LOG_STEP("Loading scene objects"));
 
-    scene->objects = (SceneObject*)malloc(sizeof(struct _SceneObject) * scene->objects_count);
+    scene->objects = (SceneObject*)malloc(sizeof(SceneObject) * scene->objects_count);
     if (scene->objects == NULL) {
         printf(LOG_ERROR("Allocation error", "Failed to allocate memory for scene objects.\n"));
         exit(6);
     }
 
     for (unsigned int i = 0; i < scene->objects_count; i++) {
-        printf("\tObject #%u:\n", i);
+        scene->objects[i] = (SceneObject)malloc(sizeof(struct _SceneObject));
+
         if (fscanf(file, "S %f %f %f %f %u %u %u\n", &scene->objects[i]->x, &scene->objects[i]->y, &scene->objects[i]->z, &scene->objects[i]->radius, &r, &g, &b) != 7) {
             printf(LOG_ERROR("Malformed scene file", "Can not read object %u\n"), i);
             exit(5);
         }
-        printf("1");
         scene->objects[i]->color_red = (uint8_t)r;
         scene->objects[i]->color_green = (uint8_t)g;
         scene->objects[i]->color_blue = (uint8_t)b;
-        printf("\tSphere: x = %f, y = %f, z = %f, radius = %f, background[RGB] = (%u, %u, %u)\n", scene->objects[i]->x, scene->objects[i]->y, scene->objects[i]->z, scene->objects[i]->radius, scene->objects[i]->color_red, scene->objects[i]->color_green, scene->objects[i]->color_blue);
+        // printf("\tSphere: x=%.3f, y=%.3f, z=%.3f, r=%.3f, bg=(%u, %u, %u)\n", scene->objects[i]->x, scene->objects[i]->y, scene->objects[i]->z, scene->objects[i]->radius, scene->objects[i]->color_red, scene->objects[i]->color_green, scene->objects[i]->color_blue);
     }
 
     fclose(file);

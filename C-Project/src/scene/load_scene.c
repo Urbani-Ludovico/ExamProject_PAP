@@ -47,7 +47,7 @@ Scene load_scene(const char* scene_path) {
 
     printf(LOG_STEP("Loading scene objects"));
 
-    scene->objects = (SceneObject*)malloc(sizeof(SceneObject) * scene->objects_count);
+    scene->objects = (SceneObject*)calloc(scene->objects_count, sizeof(SceneObject));
     if (scene->objects == NULL) {
         printf(LOG_ERROR("Allocation error", "Failed to allocate memory for scene objects.\n"));
         exit(6);
@@ -57,7 +57,7 @@ Scene load_scene(const char* scene_path) {
         scene->objects[i] = (SceneObject)malloc(sizeof(struct _SceneObject));
 
         if (fscanf(file, "S %f %f %f %f %u %u %u\n", &scene->objects[i]->x, &scene->objects[i]->y, &scene->objects[i]->z, &scene->objects[i]->radius, &r, &g, &b) != 7) {
-            printf(LOG_ERROR("Malformed scene file", "Can not read object %u\n"), i);
+            printf(LOG_ERROR("Malformed scene file", "Can not read object %u\n"), i + 1);
             exit(5);
         }
         scene->objects[i]->color_red = (uint8_t)r;

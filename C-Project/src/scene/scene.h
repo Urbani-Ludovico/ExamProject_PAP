@@ -28,7 +28,7 @@ struct _Scene {
     uint8_t background_green;
     uint8_t background_blue;
 
-    uint16_t objects_count;
+    unsigned int objects_count;
     SceneObject * objects;
 };
 typedef struct _Scene * Scene;

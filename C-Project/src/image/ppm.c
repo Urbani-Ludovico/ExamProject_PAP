@@ -5,13 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/mman.h>
-
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <sys/types.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
 
 #include "../tools/argv_tools.h"
 #include "../tools/logs.h"
@@ -32,7 +26,11 @@ void ppm_init(const char* out_path, const image_size_t width, const image_size_t
     fflush(file);
 
     int fd = fileno(file);
-    printf("%d\n", fd);
+
+    if (ftruncate(fd, width * height * 3 + ftell(file)) < 0) {
+        printf(LOG_ERROR("Trucate Error", "ftruncate on ppm file returns and error"));
+        exit(4);
+    }
 
     *file_out = file;
 }

@@ -14,7 +14,7 @@
 
 
 unsigned int ppm_init(const char* out_path, const image_size_t width, const image_size_t height, FILE** file_out, uint8_t** data_out) {
-    printf(LOG_STEP("Opening ppm file"));
+    printf(LOG_STEP("Creating ppm file"));
 
     FILE* file = fopen(out_path, "wb");
     if (file == NULL) {
@@ -37,7 +37,7 @@ unsigned int ppm_init(const char* out_path, const image_size_t width, const imag
 
     uint8_t* data = mmap(NULL, width * height * 3 * sizeof(uint8_t), PROT_WRITE, MAP_SHARED, fd, ftell(file));
     if (data == MAP_FAILED) {
-        printf(LOG_ERROR("Memomry Map Failed", "Function mmap returns a MAP_FAILED."));
+        printf(LOG_ERROR("Memory Map Failed", "Function mmap returns a MAP_FAILED."));
         exit(9);
     }
 

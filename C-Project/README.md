@@ -12,4 +12,4 @@
 | 6          | Allocation error     | Malloc return NULL                 |
 | 7          | Trucate Error        | Error with ftruncate function      |
 | 8          | Write Error          | Error while writing data to file   |
-| 8          | Memomry Map Failed   | Function mmap returns a MAP_FAILED |
+| 8          | Memory Map Failed    | Function mmap returns a MAP_FAILED |

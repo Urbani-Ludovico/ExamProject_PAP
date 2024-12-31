@@ -23,13 +23,13 @@
     distance = equation; \
     if (distance * ((distance > 0) - (distance < 0)) < min_distance) { \
         min_distance = distance; \
-        color_red = sphere->color_red; \
-        color_green = sphere->color_green; \
-        color_blue = sphere->color_blue; \
+        color_red = sphere.color_red; \
+        color_green = sphere.color_green; \
+        color_blue = sphere.color_blue; \
     }
 #endif
 
-void raytrace(uint8_t* map, const Scene scene, const image_size_t image_width, const image_size_t image_height) {
+void raytrace(uint8_t* map, Scene * scene, const image_size_t image_width, const image_size_t image_height) {
     printf(LOG_STEP("Raytrace started"));
 
     #pragma omp parallel for schedule(dynamic, 1)
@@ -55,12 +55,12 @@ void raytrace(uint8_t* map, const Scene scene, const image_size_t image_width, c
             double distance;
             for (unsigned int s = 0; s < scene->objects_count; s++) {
                 if (s < scene->objects_count - 1) {
-                    __builtin_prefetch(scene->objects[s + 1]);
+                    __builtin_prefetch(&scene->objects[s + 1]);
                 }
                 const SceneObject sphere = scene->objects[s];
 
-                const double b = -2.0 * (sphere->x * vx1 + sphere->y * vy1 + sphere->z * vz1);
-                const double c = sphere->x * sphere->x + sphere->y * sphere->y + sphere->z * sphere->z - sphere->radius * sphere->radius;
+                const double b = -2.0 * (sphere.x * vx1 + sphere.y * vy1 + sphere.z * vz1);
+                const double c = sphere.x * sphere.x + sphere.y * sphere.y + sphere.z * sphere.z - sphere.radius * sphere.radius;
 
                 const double delta = b * b - 4 * a * c;
                 if (__builtin_expect(delta > -DOUBLE_TOLLERANCE && delta < DOUBLE_TOLLERANCE, 0)) {

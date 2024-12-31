@@ -26,7 +26,7 @@ int main(const int argc, const char* argv[]) {
     const image_size_t image_height = argv_parse_size(argv[4]);
     printf("\tScene file: %s\n\tOutput file: %s\n\tImage size: %u x %u\n", scene_path, out_path, image_width, image_height);
 
-    const Scene scene = load_scene(scene_path);
+    Scene * scene = load_scene(scene_path);
 
     FILE* ppm;
     uint8_t* ppm_data;

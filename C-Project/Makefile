@@ -34,15 +34,28 @@ build/includes/scene.o: src/scene/scene.c src/scene/scene.h src/tools/logs.h
 # TESTS
 #
 
-.PHONY: test
-test: t1
+test: t1a t1b t1c
 
-.PHONY: t1
-t1: build/main tests/t1.txt
+.PHONY: t1a
+t1a: build/main tests/t1.txt
 	@ echo ""
-	@ echo "- - - Test 1 - - -"
+	@ echo "- - - Test 1-A - - -"
 	@ echo ""
 	@ build/main tests/t1.txt tests/t1_1920x1080.ppm 1920 1080
+
+.PHONY: t1b
+t1b: build/main tests/t1.txt
+	@ echo ""
+	@ echo "- - - Test 1-B - - -"
+	@ echo ""
+	@ build/main tests/t1.txt tests/t1_144x81.ppm 144 81
+
+.PHONY: t1c
+t1c: build/main tests/t1.txt
+	@ echo ""
+	@ echo "- - - Test 1-C - - -"
+	@ echo ""
+	@ build/main tests/t1.txt tests/t1_7680x4320.ppm 7680 4320
 
 #
 # CLEAN

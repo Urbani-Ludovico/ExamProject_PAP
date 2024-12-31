@@ -65,8 +65,8 @@ void raytrace([[maybe_unused]] uint8_t* map, const Scene scene, const image_size
                 if (delta > -DOUBLE_TOLLERANCE && delta < DOUBLE_TOLLERANCE) {
                     SPHERE_CHECK_DISTANCE(-b - 2 * a);
                 } else if (delta > 0) {
-                    SPHERE_CHECK_DISTANCE((-b - sqrt(b * b - 4 * a * c)) / (2 * a))
-                    SPHERE_CHECK_DISTANCE((-b + sqrt(b * b - 4 * a * c)) / (2 * a))
+                    SPHERE_CHECK_DISTANCE((-b - sqrt(delta)) / (2 * a))
+                    SPHERE_CHECK_DISTANCE((-b + sqrt(delta)) / (2 * a))
                 }
             }
 

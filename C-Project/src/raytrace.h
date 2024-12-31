@@ -10,6 +10,6 @@
 #include "scene/scene.h"
 #include "tools/argv_tools.h"
 
-void raytrace(uint8_t * map, Scene scene, image_size_t image_width, image_size_t image_height);
+void raytrace(uint8_t* map, Scene scene, image_size_t image_width, image_size_t image_height);
 
 #endif

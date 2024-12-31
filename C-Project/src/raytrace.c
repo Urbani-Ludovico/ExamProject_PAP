@@ -29,7 +29,7 @@
     }
 #endif
 
-void raytrace([[maybe_unused]] uint8_t* map, const Scene scene, const image_size_t image_width, const image_size_t image_height) {
+void raytrace(uint8_t* map, const Scene scene, const image_size_t image_width, const image_size_t image_height) {
     printf(LOG_STEP("Raytrace started"));
     #pragma omp parallel for schedule(dynamic, 1)
     for (image_size_t y = 0; y < image_height; y++) {

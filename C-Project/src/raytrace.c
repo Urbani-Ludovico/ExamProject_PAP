@@ -67,9 +67,9 @@ void raytrace([[maybe_unused]] uint8_t* map, const Scene scene, const image_size
                 }
             }
 
-            map[y * image_width * 3 + x * 3] = color_red;
-            map[y * image_width * 3 + x * 3 + 1] = color_green;
-            map[y * image_width * 3 + x * 3 + 2] = color_blue;
+            map[(image_height - y - 1) * image_width * 3 + x * 3] = color_red;
+            map[(image_height - y - 1) * image_width * 3 + x * 3 + 1] = color_green;
+            map[(image_height - y - 1) * image_width * 3 + x * 3 + 2] = color_blue;
         }
     }
 }

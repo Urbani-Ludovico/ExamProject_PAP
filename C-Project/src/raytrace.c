@@ -20,8 +20,8 @@
 
 #ifndef SPHERE_CHECK_DISTANCE
 #define SPHERE_CHECK_DISTANCE(equation) \
-    distance = equation < 0 ? -(equation) : equation; \
-    if (distance < min_distance) { \
+    distance = equation; \
+    if (distance * ((distance > 0) - (distance < 0)) < min_distance) { \
         min_distance = distance; \
         color_red = sphere->color_red; \
         color_green = sphere->color_green; \

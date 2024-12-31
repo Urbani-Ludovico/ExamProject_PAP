@@ -34,9 +34,17 @@ void raytrace(uint8_t* map, Scene * scene, const image_size_t image_width, const
 
     #pragma omp parallel for schedule(dynamic, 1)
     for (image_size_t y = 0; y < image_height; y++) {
+        const unsigned int row = (image_height - y - 1) * image_width * 3;
+
         const double vy = scene->viewport_y * (double)y / (image_height - 1.0) - scene->viewport_y / 2.0;
 
         for (image_size_t x = 0; x < image_width; x++) {
+            if (x < image_width - 1) {
+                __builtin_prefetch(&map[row + (x + 1) * 3]);
+                __builtin_prefetch(&map[row + (x + 1) * 3 + 1]);
+                __builtin_prefetch(&map[row + (x + 1) * 3 + 2]);
+            }
+
             // Vector
             const double vx = scene->viewport_x * (double)x / (image_width - 1.0) - scene->viewport_x / 2.0;
 
@@ -71,9 +79,9 @@ void raytrace(uint8_t* map, Scene * scene, const image_size_t image_width, const
                 }
             }
 
-            map[(image_height - y - 1) * image_width * 3 + x * 3] = color_red;
-            map[(image_height - y - 1) * image_width * 3 + x * 3 + 1] = color_green;
-            map[(image_height - y - 1) * image_width * 3 + x * 3 + 2] = color_blue;
+            map[row + x * 3] = color_red;
+            map[row + x * 3 + 1] = color_green;
+            map[row + x * 3 + 2] = color_blue;
         }
     }
 }

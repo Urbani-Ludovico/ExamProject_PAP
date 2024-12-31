@@ -24,7 +24,7 @@ build/includes/main.o: src/main.c src/image/ppm.h src/raytrace.h src/scene/load_
 build/includes/ppm.o: src/image/ppm.c src/image/ppm.h src/tools/argv_tools.h src/tools/logs.h
 	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@
 
-build/includes/raytrace.o: src/raytrace.c src/raytrace.h src/scene/scene.h src/tools/argv_tools.h
+build/includes/raytrace.o: src/raytrace.c src/raytrace.h src/scene/scene.h src/tools/argv_tools.h src/tools/logs.h
 	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@ -fopenmp
 
 build/includes/scene.o: src/scene/scene.c src/scene/scene.h src/tools/logs.h

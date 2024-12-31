@@ -31,6 +31,7 @@
 
 void raytrace(uint8_t* map, const Scene scene, const image_size_t image_width, const image_size_t image_height) {
     printf(LOG_STEP("Raytrace started"));
+
     #pragma omp parallel for schedule(dynamic, 1)
     for (image_size_t y = 0; y < image_height; y++) {
         const double vy = scene->viewport_y * (double)y / (image_height - 1.0) - scene->viewport_y / 2.0;
@@ -53,13 +54,16 @@ void raytrace(uint8_t* map, const Scene scene, const image_size_t image_width, c
             const double a = vx1 * vx1 + vy1 * vy1 + vz1 * vz1;
             double distance;
             for (unsigned int s = 0; s < scene->objects_count; s++) {
+                if (s < scene->objects_count - 1) {
+                    __builtin_prefetch(scene->objects[s + 1]);
+                }
                 const SceneObject sphere = scene->objects[s];
 
                 const double b = -2.0 * (sphere->x * vx1 + sphere->y * vy1 + sphere->z * vz1);
                 const double c = sphere->x * sphere->x + sphere->y * sphere->y + sphere->z * sphere->z - sphere->radius * sphere->radius;
 
                 const double delta = b * b - 4 * a * c;
-                if (delta > -DOUBLE_TOLLERANCE && delta < DOUBLE_TOLLERANCE) {
+                if (__builtin_expect(delta > -DOUBLE_TOLLERANCE && delta < DOUBLE_TOLLERANCE, 0)) {
                     SPHERE_CHECK_DISTANCE(-b - 2 * a);
                 } else if (delta > 0) {
                     SPHERE_CHECK_DISTANCE((-b - sqrt(delta)) / (2 * a))

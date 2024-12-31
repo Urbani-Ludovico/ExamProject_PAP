@@ -10,7 +10,7 @@ COMPILER_FLAGS = -O3 -std=gnu2x ${COMPILER_ERROR_FLAGS}
 all: build/main
 
 build/main: build/includes/main.o build/includes/argv_tools.o build/includes/load_scene.o build/includes/ppm.o build/includes/raytrace.o build/includes/scene.o
-	${COMPILER} $^ -o $@
+	${COMPILER} ${COMPILER_FLAGS} $^ -o $@ -fopenmp -lm
 
 build/includes/argv_tools.o: src/tools/argv_tools.c src/tools/argv_tools.h src/tools/logs.h
 	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@
@@ -25,7 +25,7 @@ build/includes/ppm.o: src/image/ppm.c src/image/ppm.h src/tools/argv_tools.h src
 	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@
 
 build/includes/raytrace.o: src/raytrace.c src/raytrace.h src/scene/scene.h src/tools/argv_tools.h
-	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@
+	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@ -fopenmp
 
 build/includes/scene.o: src/scene/scene.c src/scene/scene.h src/tools/logs.h
 	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@

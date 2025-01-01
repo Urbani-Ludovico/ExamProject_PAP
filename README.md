@@ -1,6 +1,6 @@
 # Advance and Parallel Programming
 
-Ludovico Urbani <SM3201372>
+Ludovico Urbani \<SM3201372\>
 
 ## Part 1 - Raytracing
 

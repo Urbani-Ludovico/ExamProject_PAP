@@ -3,6 +3,8 @@ class Assembler(object):
 
     def __init__(self, file_path: str, verbose: bool = False):
         self._verbose = verbose
+        if self._verbose:
+            print("- - - LMC Assembler - - -")
 
         self.success = None
 

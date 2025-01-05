@@ -71,11 +71,10 @@ class Assembler(object):
                 if len(parts):
                     try:
                         value = int(parts.pop(0))
-
-                        if value < 0 or value >= 1000:
-                            raise LmcAssemblyDatError(f"{value} is not a correct value")
                     except ValueError:
                         pass
+                    if value < 0 or value >= 1000:
+                        raise ValueError(f"{value} is not a correct value")
                 self.lmc_memory[cell] = value
             else:
                 self.success = False
@@ -150,6 +149,3 @@ class LmcAssemblyMissingAddress(Exception):
 class LmcAssemblyWrongAddress(Exception):
     pass
 
-
-class LmcAssemblyDatError(Exception):
-    pass

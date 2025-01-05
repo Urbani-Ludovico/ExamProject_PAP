@@ -1,9 +1,16 @@
 
 class Lmc(object):
-    def __init__(self, memory: list[int] = None, verbose: bool = False):
+    def __init__(self, input_queue: list[int], memory: list[int] = None, verbose: bool = False):
         self._verbose = verbose
         if self._verbose:
             print("- - - LMC - - -")
+
+        if self._verbose:
+            print("Creating environment...")
+        self.program_counter = 0
+        self.accumulator = None
+        self.input_queue = input_queue
+        self.output_queue = []
 
         if self._verbose:
             print("Creating memory...")
@@ -16,4 +23,3 @@ class Lmc(object):
 
             self.memory = memory
         self.memory = [0] * 100
-

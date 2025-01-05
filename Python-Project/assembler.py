@@ -150,5 +150,6 @@ class LmcAssemblyMissingAddress(Exception):
 class LmcAssemblyWrongAddress(Exception):
     pass
 
+
 class LmcAssemblyDatError(Exception):
     pass

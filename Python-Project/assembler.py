@@ -60,7 +60,7 @@ class Assembler(object):
             cell += 1
             if cell >= 100:
                 self.success = False
-                raise LmcAssemblyMaxLength("Max length of 100 instructions on memory exceeded")
+                raise AssemblerMaxLengthError("Max length of 100 instructions on memory exceeded")
 
             command = parts.pop(0)
 
@@ -97,7 +97,7 @@ class Assembler(object):
                 self._lmc_memory[cell] = value
             else:
                 self.success = False
-                error = LmcAssemblyUnknownCommand(f"Unknown commnd in line {cell + 1}")
+                error = AssemblerUnknownCommandError(f"Unknown commnd in line {cell + 1}")
                 error.add_note(" ".join(parts))
                 raise error
 
@@ -125,7 +125,7 @@ class Assembler(object):
         """
         if not len(parts):
             self.success = False
-            raise LmcAssemblyMissingAddress("Missing address")
+            raise AssemblerMissingAddressError("Missing address")
         part = parts.pop(0)
 
         try:
@@ -134,7 +134,7 @@ class Assembler(object):
                 return cell
             else:
                 self.success = False
-                raise LmcAssemblyWrongAddress(f"{cell} is not a valid address")
+                raise AssemblerWrongAddressError(f"{cell} is not a valid address")
         except ValueError:
             pass
 
@@ -143,10 +143,10 @@ class Assembler(object):
                 return self._available_addresses[part]
 
             self.success = False
-            raise LmcAssemblyWrongAddress(f"{part}[{self._available_addresses[part]}] is not a valid address")
+            raise AssemblerWrongAddressError(f"{part}[{self._available_addresses[part]}] is not a valid address")
 
         self.success = False
-        raise LmcAssemblyWrongAddress(f"{part} is not a valid address")
+        raise AssemblerWrongAddressError(f"{part} is not a valid address")
 
     # Use @property for mark variable as read only.
     # If the variable is a list, it returns a copy of list, for prevent editing of values.
@@ -177,18 +177,18 @@ def remove_line_comments(line) -> str:
     return line
 
 
-class LmcAssemblyUnknownCommand(Exception):
+class AssemblerUnknownCommandError(Exception):
     pass
 
 
-class LmcAssemblyMaxLength(Exception):
+class AssemblerMaxLengthError(Exception):
     pass
 
 
-class LmcAssemblyMissingAddress(Exception):
+class AssemblerMissingAddressError(Exception):
     pass
 
 
-class LmcAssemblyWrongAddress(Exception):
+class AssemblerWrongAddressError(Exception):
     pass
 

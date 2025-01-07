@@ -22,7 +22,8 @@ class Lmc(object):
                 raise TypeError("Memory elements must be 0 <= int < 1000")
 
             self._memory = memory
-        self._memory = [0] * 100
+        else:
+            self._memory = [0] * 100
 
     def __iter__(self):
         return self
@@ -74,8 +75,10 @@ class Lmc(object):
                 raise ValueError(f"{i} is not a valid input")
 
             self._accumulator = i
+            self._program_counter += 1
         elif code == 9 and addr == 2:
             self._output_queue.append(self._accumulator)
+            self._program_counter += 1
         else:
             raise LmcInvalidOperation(f"invalid operation {command}")
 
@@ -85,7 +88,7 @@ class Lmc(object):
 
     def compute(self):
         for _ in self:
-            print(self._memory)
+            pass
         return self.output_queue
 
     @property

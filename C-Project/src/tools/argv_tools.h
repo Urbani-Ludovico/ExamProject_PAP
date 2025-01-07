@@ -17,6 +17,10 @@ typedef uint32_t image_size_t;
  */
 image_size_t argv_parse_size(const char * str);
 
+/**
+ * Print message for argument missing error.
+ * Inline function for generic message.
+ */
 void argv_missing_arg();
 
 #endif

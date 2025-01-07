@@ -35,7 +35,17 @@ struct _Scene {
 
 typedef struct _Scene Scene;
 
+/**
+ * Allocate scene object.
+ * Set array of objects to empty.
+ * @return Scene
+ */
 Scene * scene_init();
+
+/**
+ * Safe destroy scene object
+ * @param scene Allocated scene object
+ */
 void scene_destroy(Scene * scene);
 
 #endif

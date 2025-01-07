@@ -13,6 +13,9 @@
 
 
 Scene * load_scene(const char* scene_path) {
+    //
+    // Load file
+    //
     printf(LOG_STEP("Opening scene file"));
     FILE* file = fopen(scene_path, "r");
 
@@ -21,8 +24,14 @@ Scene * load_scene(const char* scene_path) {
         exit(4);
     }
 
+    //
+    // Create scene
+    //
     Scene * scene = scene_init();
 
+    //
+    // Viewport
+    //
     printf(LOG_STEP("Loading scene parameters"));
 
     if (fscanf(file, "VP %f %f %f\n", &scene->viewport_x, &scene->viewport_y, &scene->viewport_z) != 3) {
@@ -31,7 +40,10 @@ Scene * load_scene(const char* scene_path) {
     }
     printf("\tViewport: %f x %f, distance = %f\n", scene->viewport_x, scene->viewport_y, scene->viewport_z);
 
-    unsigned int r, g, b;
+    //
+    // Background color
+    //
+    unsigned int r, g, b; // Use tmp variables for rgb color, because fscanf returns unsigned int and I need to cast them to uint8_t.
     if (fscanf(file, "BG %u %u %u\n", &r, &g, &b) != 3) {
         printf(LOG_ERROR("Malformed scene file", "Can not read background data at line 2"));
         exit(5);
@@ -41,12 +53,18 @@ Scene * load_scene(const char* scene_path) {
     scene->background_blue = (uint8_t)b;
     printf("\tBackground RGB: %u, %u, %u\n", scene->background_red, scene->background_green, scene->background_blue);
 
+    //
+    // Objects count
+    //
     if (fscanf(file, "OBJ_N %u\n", &scene->objects_count) != 1) {
         printf(LOG_ERROR("Malformed scene file", "Can not read objects number at line 3"));
         exit(5);
     }
     printf("\tObjects count: %u\n", scene->objects_count);
 
+    //
+    // Objects
+    //
     printf(LOG_STEP("Loading scene objects"));
 
     scene->objects = (SceneObject *)calloc(scene->objects_count, sizeof(struct _SceneObject));
@@ -60,10 +78,10 @@ Scene * load_scene(const char* scene_path) {
             printf(LOG_ERROR("Malformed scene file", "Can not read object %u."), i + 1);
             exit(5);
         }
+        // Same code logic as in background code.
         scene->objects[i].color_red = (uint8_t)r;
         scene->objects[i].color_green = (uint8_t)g;
         scene->objects[i].color_blue = (uint8_t)b;
-        // printf("\tSphere: x=%.3f, y=%.3f, z=%.3f, r=%.3f, bg=(%u, %u, %u)\n", scene->objects[i]->x, scene->objects[i]->y, scene->objects[i]->z, scene->objects[i]->radius, scene->objects[i]->color_red, scene->objects[i]->color_green, scene->objects[i]->color_blue);
     }
 
     fclose(file);

@@ -11,7 +11,7 @@
 
 
 image_size_t argv_parse_size(const char* str) {
-    const long int tmp =  strtol(str, NULL, 0);
+    const long int tmp = strtol(str, NULL, 0);
     if (tmp <= 0) {
         printf(LOG_ERROR("Value error", "Size is not valid, expected uint32"));
         exit(3);

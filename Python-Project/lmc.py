@@ -1,5 +1,11 @@
 class Lmc(object):
     def __init__(self, input_queue: list[int], memory: list[int] = None, verbose: bool = False):
+        """
+        Init LMC
+        :param input_queue: Queue of input values
+        :param memory: LMC memory (from assembler). If None it creates an empty memory
+        :param verbose: Print messages for easy debug
+        """
         self._verbose = verbose
         if self._verbose:
             print("- - - LMC - - -")
@@ -15,9 +21,11 @@ class Lmc(object):
         if self._verbose:
             print("Creating memory...")
         if memory is not None:
+            # Check type and size of memory
             if not isinstance(memory, list) or len(memory) != 100:
                 raise TypeError("Memory must be a list[100]")
 
+            # Check if memory is an array of int in range(1000)
             if any(map(lambda c: not isinstance(c, int) or c < 0 or c >= 1000, memory)):
                 raise TypeError("Memory elements must be 0 <= int < 1000")
 
@@ -26,13 +34,22 @@ class Lmc(object):
             self._memory = [0] * 100
 
     def __iter__(self):
+        """
+        Generate iterator for computing
+        """
         return self
 
     def __next__(self):
+        """
+        Make a single step of computing
+        :return: Next operation address
+        """
         command = self._memory[self.program_counter]
 
+        # Split command in instruction code and address
         code = command // 100
         addr = command % 100
+
         if code == 0:
             raise StopIteration
         elif code == 1:
@@ -85,12 +102,18 @@ class Lmc(object):
         return self._program_counter
 
     def compute(self):
+        """
+        Compute all programm
+        :return: Output queue
+        """
         if self._verbose:
             print("Computing...")
         for _ in self:
             pass
         return self.output_queue
 
+    # Use @property for mark variable as read only.
+    # If the variable is a list, it returns a copy of list, for prevent editing of values.
     @property
     def memory(self):
         return self._memory.copy()

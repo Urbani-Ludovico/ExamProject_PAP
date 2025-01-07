@@ -16,26 +16,41 @@
 size_t ppm_init(const char* out_path, const image_size_t width, const image_size_t height, FILE** file_out, uint8_t** data_out) {
     printf(LOG_STEP("Creating ppm file"));
 
+    //
+    // Open file
+    //
     FILE* file = fopen(out_path, "w+b");
     if (file == NULL) {
         printf(LOG_ERROR("IO Error", "Unable to open file."));
         exit(4);
     }
 
+    //
+    // Print image header
+    //
     if (fprintf(file, "P6\n%d %d\n255\n", width, height) < 0) {
         printf(LOG_ERROR("Write Error", "Error while writing data to file."));
         exit(8);
     }
     fflush(file);
 
+    //
+    // File descriptor
+    //
     const int fd = fileno(file);
     const size_t file_size = width * height * 3 + sizeof(uint8_t) + ftell(file);
 
+    //
+    // Set file size with trucate
+    //
     if (ftruncate(fd, (long int)file_size) < 0) {
         printf(LOG_ERROR("Trucate Error", "ftruncate on ppm file returns and error."));
         exit(7);
     }
 
+    //
+    // Create mmap
+    //
     uint8_t* data = mmap(NULL, file_size, PROT_WRITE, MAP_SHARED, fd, 0);
     if (data == MAP_FAILED) {
         perror("mmap");

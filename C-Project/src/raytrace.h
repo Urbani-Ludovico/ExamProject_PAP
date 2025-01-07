@@ -10,6 +10,13 @@
 #include "scene/scene.h"
 #include "tools/argv_tools.h"
 
+/**
+ * Raytrace function
+ * @param map mmap object where draw image
+ * @param scene Scene object
+ * @param image_width Image width
+ * @param image_height Image height
+ */
 void raytrace(uint8_t* map, Scene * scene, image_size_t image_width, image_size_t image_height);
 
 #endif

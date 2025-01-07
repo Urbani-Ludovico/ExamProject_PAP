@@ -25,12 +25,12 @@ struct _Scene {
     float viewport_y;
     float viewport_z;
 
+    unsigned int objects_count;
+    SceneObject * objects;
+
     uint8_t background_red;
     uint8_t background_green;
     uint8_t background_blue;
-
-    unsigned int objects_count;
-    SceneObject * objects;
 };
 
 typedef struct _Scene Scene;

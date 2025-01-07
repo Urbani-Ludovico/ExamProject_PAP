@@ -60,11 +60,9 @@ class Lmc(object):
         elif code == 6:
             self._program_counter = addr
         elif code == 7:
-            if self._accumulator == 0 and not self.flag:
-                self._program_counter = addr
+            self._program_counter = addr if self._accumulator == 0 and not self.flag else self._program_counter + 1
         elif code == 8:
-            if not self.flag:
-                self._program_counter = addr
+            self._program_counter = addr if not self._flag else self._program_counter + 1
         elif code == 9 and addr == 1:
             try:
                 i = self._input_queue.pop(0)
@@ -87,6 +85,8 @@ class Lmc(object):
         return self._program_counter
 
     def compute(self):
+        if self._verbose:
+            print("Computing...")
         for _ in self:
             pass
         return self.output_queue

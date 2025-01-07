@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-struct _SceneObject {
+struct __attribute__((packed)) _SceneObject {
     float x;
     float y;
     float z;

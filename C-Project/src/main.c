@@ -12,6 +12,12 @@
 #include "tools/logs.h"
 
 
+/**
+ * Main function
+ * @param argc
+ * @param argv Input of program, it sould contain scene_path, out_path, image_width, image_height
+ * @return Status code
+ */
 int main(const int argc, const char* argv[]) {
     printf(LOG_STEP("Starting program"));
 

@@ -1,5 +1,29 @@
 # Raytracing
 
+This code implements a simple Raytracing for an environment including only sphere objects.
+
+## Run syntax
+
+```bash
+build/main scene_path out_path image_width image_height
+```
+Where:
+- `scene_path`: Path to file.txt with scene parameters
+- `out_path`: Path used to save image
+- `image_width` and `image_height`: Size of image
+
+Example as in test `t1a`
+```bash
+build/main tests/t1.txt tests/t1_1920x1080.ppm 1920 1080
+```
+
+### Makefile commands
+
+| Target | Description     |
+|--------|-----------------|
+| main   | Compile project |
+| test   | Run all tests   |
+
 ## Errors
 
 | Error code | Type                 | Description                        |

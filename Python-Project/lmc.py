@@ -116,7 +116,6 @@ class Lmc(object):
         return self._output_queue.copy()
 
 
-
 class LmcEmptyInputError(Exception):
     pass
 

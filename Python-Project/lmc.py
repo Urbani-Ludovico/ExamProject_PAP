@@ -26,7 +26,7 @@ class Lmc(object):
                 raise TypeError("Memory must be a list[100]")
 
             # Check if memory is an array of int in range(1000)
-            if any(map(lambda c: not isinstance(c, int) or c < 0 or c >= 1000, memory)):
+            if any(map(lambda c: not (isinstance(c, int) and 0 <= c < 1000), memory)):
                 raise TypeError("Memory elements must be 0 <= int < 1000")
 
             self._memory = memory

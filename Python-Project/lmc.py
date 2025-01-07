@@ -1,14 +1,28 @@
+def operation_logger(func):
+    def wrapper(self):
+        if self._track_operations:
+            self._log_operations.append(self._memory[self._program_counter])
+        func(self)
+
+    return wrapper
+
+
 class Lmc(object):
-    def __init__(self, input_queue: list[int], memory: list[int] = None, verbose: bool = False):
+    def __init__(self, input_queue: list[int], memory: list[int] = None, track_operations: bool = False, verbose: bool = False):
         """
         Init LMC
         :param input_queue: Queue of input values
         :param memory: LMC memory (from assembler). If None it creates an empty memory
+        :param track_operations: Keep track of operations in the variable log_operations
         :param verbose: Print messages for easy debug
         """
         self._verbose = verbose
         if self._verbose:
             print("- - - LMC - - -")
+
+        self._track_operations = track_operations
+        if self._track_operations:
+            self._log_operations = []
 
         if self._verbose:
             print("Creating environment...")
@@ -39,6 +53,7 @@ class Lmc(object):
         """
         return self
 
+    @operation_logger
     def __next__(self):
         """
         Make a single step of computing
@@ -137,6 +152,12 @@ class Lmc(object):
     @property
     def output_queue(self):
         return self._output_queue.copy()
+
+    @property
+    def log_operations(self):
+        if self._track_operations:
+            return self._log_operations
+        return None
 
 
 class LmcEmptyInputError(Exception):

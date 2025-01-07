@@ -8,7 +8,7 @@ class Assembler(object):
 
         self.success = None
 
-        self.lmc_memory = [0] * 100
+        self._lmc_memory = [0] * 100
         self._available_addresses = {}
 
         if self._verbose:
@@ -23,9 +23,7 @@ class Assembler(object):
         if self._verbose:
             print(f"Read {len(self.assembly)} lines")
 
-        self._compile()
-
-    def _compile(self) -> None:
+    def compile(self) -> None:
         self._get_labels()
 
         if self._verbose:
@@ -49,25 +47,25 @@ class Assembler(object):
             command = parts.pop(0)
 
             if command == "ADD":
-                self.lmc_memory[cell] = 100 + self._get_address(parts)
+                self._lmc_memory[cell] = 100 + self._get_address(parts)
             elif command == "SUB":
-                self.lmc_memory[cell] = 200 + self._get_address(parts)
+                self._lmc_memory[cell] = 200 + self._get_address(parts)
             elif command == "STA":
-                self.lmc_memory[cell] = 300 + self._get_address(parts)
+                self._lmc_memory[cell] = 300 + self._get_address(parts)
             elif command == "LDA":
-                self.lmc_memory[cell] = 500 + self._get_address(parts)
+                self._lmc_memory[cell] = 500 + self._get_address(parts)
             elif command == "BRA":
-                self.lmc_memory[cell] = 600 + self._get_address(parts)
+                self._lmc_memory[cell] = 600 + self._get_address(parts)
             elif command == "BRZ":
-                self.lmc_memory[cell] = 700 + self._get_address(parts)
+                self._lmc_memory[cell] = 700 + self._get_address(parts)
             elif command == "BRP":
-                self.lmc_memory[cell] = 800 + self._get_address(parts)
+                self._lmc_memory[cell] = 800 + self._get_address(parts)
             elif command == "INP":
-                self.lmc_memory[cell] = 901
+                self._lmc_memory[cell] = 901
             elif command == "OUT":
-                self.lmc_memory[cell] = 902
+                self._lmc_memory[cell] = 902
             elif command == "HLT":
-                self.lmc_memory[cell] = 0
+                self._lmc_memory[cell] = 0
             elif command == "DAT":
                 value = 0
                 if len(parts):
@@ -77,7 +75,7 @@ class Assembler(object):
                         pass
                     if value < 0 or value >= 1000:
                         raise ValueError(f"{value} is not a correct value")
-                self.lmc_memory[cell] = value
+                self._lmc_memory[cell] = value
             else:
                 self.success = False
                 error = LmcAssemblyUnknownCommand(f"Unknown commnd in line {cell + 1}")
@@ -122,6 +120,10 @@ class Assembler(object):
 
         self.success = False
         raise LmcAssemblyWrongAddress(f"{part} is not a valid address")
+
+    @property
+    def lmc_memory(self):
+        return self._lmc_memory.copy()
 
 
 def get_line_parts(line: str) -> list[str]:

@@ -10,3 +10,5 @@ except IndexError:
     exit(1)
 
 ass = Assembler(argv[1], verbose = True)
+ass.compile()
+print(ass.lmc_memory)

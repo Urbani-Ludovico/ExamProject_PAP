@@ -48,9 +48,10 @@ Scene * load_scene(const char* scene_path) {
         printf(LOG_ERROR("Malformed scene file", "Can not read background data at line 2"));
         exit(5);
     }
-    scene->background_red = (uint8_t)r;
-    scene->background_green = (uint8_t)g;
-    scene->background_blue = (uint8_t)b;
+    // Color greather than 255 is interpreted as 255
+    scene->background_red = r <= 255 ? (uint8_t)r : 255;
+    scene->background_green = g <= 255 ? (uint8_t)g : 255;
+    scene->background_blue = b <= 255 ? (uint8_t)b : 255;
     printf("\tBackground RGB: %u, %u, %u\n", scene->background_red, scene->background_green, scene->background_blue);
 
     //
@@ -79,9 +80,9 @@ Scene * load_scene(const char* scene_path) {
             exit(5);
         }
         // Same code logic as in background code.
-        scene->objects[i].color_red = (uint8_t)r;
-        scene->objects[i].color_green = (uint8_t)g;
-        scene->objects[i].color_blue = (uint8_t)b;
+        scene->objects[i].color_red = r <= 255 ? (uint8_t)r : 255;
+        scene->objects[i].color_green = g <= 255 ? (uint8_t)g : 255;
+        scene->objects[i].color_blue = b <= 255 ? (uint8_t)b : 255;
     }
 
     fclose(file);

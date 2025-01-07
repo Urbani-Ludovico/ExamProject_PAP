@@ -12,4 +12,5 @@ except IndexError:
 
 ass = Assembler(argv[1], verbose = True)
 
-lmc = Lmc(memory = ass.lmc_memory, verbose = True)
+lmc = Lmc([1, 2, 3], memory = ass.lmc_memory, verbose = True)
+print(lmc.compute())

@@ -34,7 +34,7 @@ void raytrace(uint8_t* map, Scene * scene, const image_size_t image_width, const
     printf(LOG_STEP("Raytrace started"));
 
     // Parallelize only rows of image. Because, in the rappresentation of image, a row is a contiguous subarray of mmap. So having a contiguous array (row) in same thread helps branch prediction
-    #pragma omp parallel for schedule(dynamic, 1)
+    #pragma omp parallel for schedule(static, 10)
     for (image_size_t y = 0; y < image_height; y++) {
         const unsigned int row = (image_height - y - 1) * image_width * 3;
 

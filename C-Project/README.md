@@ -28,6 +28,8 @@ build/main tests/t1.txt tests/t1_1920x1080.ppm 1920 1080
 
 If available the program uses AVX2 vectorialiation.
 
+If gcc standard `gnu2x` is not available, change option of make to `GCC_STD=c17`.
+
 ## Errors
 
 | Error code | Type                 | Description                        |

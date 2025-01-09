@@ -75,12 +75,13 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
 
             #ifdef __AVX2__
             for (unsigned int sb = 0; sb < scene->sphere_total_count; sb += 8) {
+                // Load data of 8 spheres into vector of 8 floats with intrinsics
                 const __m256 x_vec = _mm256_loadu_ps(&scene->sphere_x[sb]);
                 const __m256 y_vec = _mm256_loadu_ps(&scene->sphere_y[sb]);
                 const __m256 z_vec = _mm256_loadu_ps(&scene->sphere_z[sb]);
                 const __m256 r_vec = _mm256_loadu_ps(&scene->sphere_r[sb]);
 
-                __m256 b = _mm256_mul_ps(_mm256_add_ps(_mm256_add_ps(_mm256_mul_ps(x_vec, _mm256_set1_ps(vx1)), _mm256_mul_ps(y_vec, _mm256_set1_ps(vy1))), _mm256_mul_ps(z_vec, _mm256_set1_ps(vz1))), _mm256_set1_ps(2));
+                __m256 b = _mm256_mul_ps(_mm256_add_ps(_mm256_add_ps(_mm256_mul_ps(x_vec, _mm256_set1_ps(vx1)), _mm256_mul_ps(y_vec, _mm256_set1_ps(vy1))), _mm256_mul_ps(z_vec, _mm256_set1_ps(vz1))), _mm256_set1_ps(-2));
                 __m256 c = _mm256_add_ps(_mm256_add_ps(_mm256_mul_ps(x_vec, x_vec), _mm256_mul_ps(y_vec, y_vec)), _mm256_sub_ps(_mm256_mul_ps(z_vec, z_vec), _mm256_mul_ps(r_vec, r_vec)));
 
                 __m256 delta = _mm256_sub_ps(_mm256_mul_ps(b, b), _mm256_mul_ps(c, _mm256_set1_ps(4 * a)));

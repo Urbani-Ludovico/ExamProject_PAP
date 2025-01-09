@@ -5,9 +5,7 @@
 #ifndef ARGV_TOOLS_H
 #define ARGV_TOOLS_H
 
-#include <stdint.h>
-
-typedef uint32_t image_size_t;
+typedef unsigned int image_size_t;
 
 /**
  * Parse image size from argv string.

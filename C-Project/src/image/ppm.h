@@ -5,6 +5,8 @@
 #ifndef PPM_H
 #define PPM_H
 
+#include <stdint.h>
+
 #include "../tools/argv_tools.h"
 
 typedef unsigned char* ppm_t;

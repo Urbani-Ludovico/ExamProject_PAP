@@ -14,8 +14,8 @@
 #include "raytrace.h"
 
 
-#ifndef DOUBLE_TOLLERANCE
-#define DOUBLE_TOLLERANCE 1e-6
+#ifndef FLOAT_TOLLERANCE
+#define FLOAT_TOLLERANCE 1e-6
 #endif
 
 // SPHERE_CHECK_DISTANCE use in if a branchless absolute value
@@ -39,7 +39,7 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
         const unsigned int row = (image_height - y - 1) * image_width * 3;
 
         // Vector y (same for alla row)
-        const double vy = scene->viewport_y * (double)y / (image_height - 1.0) - scene->viewport_y / 2.0;
+        const float vy = scene->viewport_y * (float)y / (float)(image_height - 1) - scene->viewport_y / 2;
 
         for (image_size_t x = 0; x < image_width; x++) {
             // Prefetch next index of mmap
@@ -50,23 +50,23 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
             }
 
             // Vector x
-            const double vx = scene->viewport_x * (double)x / (image_width - 1.0) - scene->viewport_x / 2.0;
+            const float vx = scene->viewport_x * (float)x / (float)(image_width - 1) - scene->viewport_x / 2;
 
             // Unitary vector
-            const double norm = sqrt(vx * vx + vy * vy + scene->viewport_z * scene->viewport_z);
-            const double vx1 = vx / norm;
-            const double vy1 = vy / norm;
-            const double vz1 = scene->viewport_z / norm;
+            const float norm = (float)sqrt((double)(vx * vx + vy * vy + scene->viewport_z * scene->viewport_z));
+            const float vx1 = vx / norm;
+            const float vy1 = vy / norm;
+            const float vz1 = scene->viewport_z / norm;
 
             // Object distance and color for sphere with min distance
-            double min_distance = DBL_MAX;
+            float min_distance = FLT_MAX;
             uint8_t color_red = scene->background_red;
             uint8_t color_green = scene->background_green;
             uint8_t color_blue = scene->background_blue;
 
             // a, b, c and delta are the parameters of the formula for second degree equation
-            const double a = vx1 * vx1 + vy1 * vy1 + vz1 * vz1;
-            double distance;
+            const float a = vx1 * vx1 + vy1 * vy1 + vz1 * vz1;
+            float distance;
             for (unsigned int s = 0; s < scene->objects_count; s++) {
                 // Prefetch next sphere object
                 if (s < scene->objects_count - 1) {
@@ -74,17 +74,17 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
                 }
                 const SceneObject sphere = scene->objects[s];
 
-                const double b = -2.0 * (sphere.x * vx1 + sphere.y * vy1 + sphere.z * vz1);
-                const double c = sphere.x * sphere.x + sphere.y * sphere.y + sphere.z * sphere.z - sphere.radius * sphere.radius;
+                const float b = -2 * (sphere.x * vx1 + sphere.y * vy1 + sphere.z * vz1);
+                const float c = sphere.x * sphere.x + sphere.y * sphere.y + sphere.z * sphere.z - sphere.radius * sphere.radius;
 
-                const double delta = b * b - 4 * a * c;
+                const float delta = b * b - 4 * a * c;
                 // Considering floating point errors I use abs(delta) < epsilow instead of delta == 0
                 // I expect that it's greather the number of sphere that do not intersect ray
-                if (__builtin_expect(delta > -DOUBLE_TOLLERANCE && delta < DOUBLE_TOLLERANCE, 0)) {
+                if (__builtin_expect(delta > -FLOAT_TOLLERANCE && delta < FLOAT_TOLLERANCE, 0)) {
                     SPHERE_CHECK_DISTANCE(-b - 2 * a);
                 } else if (__builtin_expect(delta > 0, 0)) {
-                    SPHERE_CHECK_DISTANCE((-b - sqrt(delta)) / (2 * a))
-                    SPHERE_CHECK_DISTANCE((-b + sqrt(delta)) / (2 * a))
+                    SPHERE_CHECK_DISTANCE((-b - (float)sqrt((double)delta)) / (2 * a))
+                    SPHERE_CHECK_DISTANCE((-b + (float)sqrt((double)delta)) / (2 * a))
                 }
             }
 

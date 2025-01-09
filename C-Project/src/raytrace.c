@@ -22,7 +22,7 @@
 #ifndef SPHERE_CHECK_DISTANCE
 #define SPHERE_CHECK_DISTANCE(equation) \
     distance = equation; \
-    if (distance * ((distance > 0) - (distance < 0)) < min_distance) { \
+    if (__builtin_expect(distance * ((distance > 0) - (distance < 0)) < min_distance, 0)) { \
         min_distance = distance; \
         min_index = s; \
         found = true; \

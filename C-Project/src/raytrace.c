@@ -3,10 +3,13 @@
 //
 
 #include <float.h>
-#include <immintrin.h>
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
+
+#ifdef __AVX2__
+#include <immintrin.h>
+#endif
 
 #include "scene/scene.h"
 #include "tools/argv_tools.h"

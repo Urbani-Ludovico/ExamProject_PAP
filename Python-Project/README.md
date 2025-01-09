@@ -87,8 +87,26 @@ from lmc import Lmc
 assembler = Assembler("tests/init.lmc")
 memory = assembler.compile()
 
-lmc = Lmc([1, 2, 3], memory = memory)
+input_queue = [1, 2, 3]
+
+lmc = Lmc(input_queue, memory = memory)
 lmc.compute()
+print(lmc.output_queue)
+```
+
+Example of use step-by-step:
+```python
+from assembler import Assembler
+from lmc import Lmc
+
+assembler = Assembler("tests/init.lmc")
+memory = assembler.compile()
+
+input_queue = [1, 2, 3]
+
+lmc = Lmc(input_queue, memory = memory)
+for _ in lmc:
+    print(lmc.program_counter)
 print(lmc.output_queue)
 ```
 

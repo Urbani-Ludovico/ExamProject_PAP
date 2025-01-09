@@ -30,7 +30,7 @@
     }
 #endif
 
-void raytrace(uint8_t* map, Scene * scene, const image_size_t image_width, const image_size_t image_height) {
+void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const image_size_t image_height) {
     printf(LOG_STEP("Raytrace started"));
 
     // Parallelize only rows of image. Because, in the rappresentation of image, a row is a contiguous subarray of mmap. So having a contiguous array (row) in same thread helps branch prediction

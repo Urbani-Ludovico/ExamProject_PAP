@@ -26,7 +26,7 @@ struct _Scene {
     float viewport_z;
 
     unsigned int objects_count;
-    SceneObject * objects;
+    SceneObject* objects;
 
     uint8_t background_red;
     uint8_t background_green;
@@ -38,14 +38,15 @@ typedef struct _Scene Scene;
 /**
  * Allocate scene object.
  * Set array of objects to empty.
- * @return Scene
+ * @param scene Pointer to variable where store Scene object pointer
+ * @return Error code
  */
-Scene * scene_init();
+int scene_init(Scene** scene);
 
 /**
  * Safe destroy scene object
  * @param scene Allocated scene object
  */
-void scene_destroy(Scene * scene);
+void scene_destroy(Scene* scene);
 
 #endif

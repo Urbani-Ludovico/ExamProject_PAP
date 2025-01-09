@@ -16,9 +16,10 @@ typedef unsigned char* ppm_t;
  * @param height Image height
  * @param file_out Pointer to variable where store file object
  * @param data_out Pointer to variable where store mmap object
- * @return Size of mmap object to use for close file
+ * @param map_size Pointer to variable where store mmap size to use for close file
+ * @return Error code
  */
-size_t ppm_init(const char* out_path, image_size_t width, image_size_t height, FILE** file_out, uint8_t** data_out);
+int ppm_init(const char* out_path, image_size_t width, image_size_t height, FILE** file_out, uint8_t** data_out, size_t* map_size);
 
 /**
  * Close mmap object

@@ -89,6 +89,7 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
                 __m256 delta = _mm256_sub_ps(_mm256_mul_ps(b, b), _mm256_mul_ps(c, _mm256_set1_ps(4 * a)));
 
                 // delta1 > -FLOAT_TOLLERANCE
+                // Considering floating point errors I use abs(delta) < epsilow instead of delta == 0
                 const __m256 delta_more_negative_tollerance = _mm256_cmp_ps(delta, _mm256_set1_ps(-FLOAT_TOLLERANCE), _CMP_GT_OS);
                 // delta1 > FLOAT_TOLLERANCE
                 const __m256 delta_more_tollerance = _mm256_cmp_ps(delta, _mm256_set1_ps(FLOAT_TOLLERANCE), _CMP_GE_OS);
@@ -99,13 +100,13 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
                 const __m256 distance_delta_positive1 = _mm256_and_ps(_mm256_div_ps(_mm256_sub_ps(b, _mm256_sqrt_ps(delta)), _mm256_set1_ps(2 * a)), _mm256_castsi256_ps(_mm256_set1_epi32(0x7FFFFFFF)));
                 const __m256 distance_delta_positive2 = _mm256_and_ps(_mm256_div_ps(_mm256_add_ps(b, _mm256_sqrt_ps(delta)), _mm256_set1_ps(2 * a)), _mm256_castsi256_ps(_mm256_set1_epi32(0x7FFFFFFF)));
 
+                // if(delta_more_tollerance, min(distance_delta_positive1, distance_delta_positive2), if(delta_more_negative_tollerance, distance_delta_zero, FLT_MAX))
                 const __m256 distances_vect = _mm256_blendv_ps(_mm256_blendv_ps(_mm256_set1_ps(FLT_MAX), distance_delta_zero, delta_more_negative_tollerance), _mm256_min_ps(distance_delta_positive1, distance_delta_positive2), delta_more_tollerance);
                 float distances[8];
                 _mm256_storeu_ps(distances, distances_vect);
 
                 // Iterate on 8 values of the array
                 for (unsigned int i = 0; i < 8 && sb + i < scene->sphere_count; i++) {
-                    // Considering floating point errors I use abs(delta) < epsilow instead of delta == 0
                     // I expect that it's greather the number of sphere that do not intersect ray
                     if (__builtin_expect(distances[i] < min_distance, 0)) {
                         min_distance = distances[i]; \
@@ -123,17 +124,17 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
                 }
                 const Sphere sphere = scene->spheres[s];
 
-                const float b = -2 * (sphere.x * vx1 + sphere.y * vy1 + sphere.z * vz1);
+                const float b = 2 * (sphere.x * vx1 + sphere.y * vy1 + sphere.z * vz1);
                 const float c = sphere.x * sphere.x + sphere.y * sphere.y + sphere.z * sphere.z - sphere.radius * sphere.radius;
 
                 const float delta = b * b - 4 * a * c;
                 // Considering floating point errors I use abs(delta) < epsilow instead of delta == 0
                 // I expect that it's greather the number of sphere that do not intersect ray
                 if (__builtin_expect(delta > FLOAT_TOLLERANCE, 0)) {
-                    SPHERE_CHECK_DISTANCE((-b - (float)sqrt((double)delta)) / (2 * a))
-                    SPHERE_CHECK_DISTANCE((-b + (float)sqrt((double)delta)) / (2 * a))
+                    SPHERE_CHECK_DISTANCE((b - (float)sqrt((double)delta)) / (2 * a))
+                    SPHERE_CHECK_DISTANCE((b + (float)sqrt((double)delta)) / (2 * a))
                 } else if (__builtin_expect(delta > -FLOAT_TOLLERANCE, 0)) {
-                    SPHERE_CHECK_DISTANCE(-b / 2 * a)
+                    SPHERE_CHECK_DISTANCE(b / 2 * a)
                 }
             }
             #endif

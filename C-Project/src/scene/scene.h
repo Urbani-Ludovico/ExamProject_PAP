@@ -7,26 +7,31 @@
 
 #include <stdint.h>
 
-struct __attribute__((packed)) _SceneObject {
+struct _Sphere {
     float x;
     float y;
     float z;
     float radius;
+};
 
+typedef struct _Sphere Sphere;
+
+struct _SphereColor {
     uint8_t color_red;
     uint8_t color_green;
     uint8_t color_blue;
 };
 
-typedef struct _SceneObject SceneObject;
+typedef struct _SphereColor SphereColor;
 
 struct _Scene {
     float viewport_x;
     float viewport_y;
     float viewport_z;
 
-    unsigned int objects_count;
-    SceneObject* objects;
+    unsigned int sphere_count;
+    Sphere* spheres;
+    SphereColor* sphere_colors;
 
     uint8_t background_red;
     uint8_t background_green;

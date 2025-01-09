@@ -24,9 +24,8 @@
     distance = equation; \
     if (distance * ((distance > 0) - (distance < 0)) < min_distance) { \
         min_distance = distance; \
-        color_red = sphere.color_red; \
-        color_green = sphere.color_green; \
-        color_blue = sphere.color_blue; \
+        min_index = s; \
+        found = true; \
     }
 #endif
 
@@ -60,19 +59,18 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
 
             // Object distance and color for sphere with min distance
             float min_distance = FLT_MAX;
-            uint8_t color_red = scene->background_red;
-            uint8_t color_green = scene->background_green;
-            uint8_t color_blue = scene->background_blue;
+            unsigned int min_index = 0;
+            bool found = false;
 
             // a, b, c and delta are the parameters of the formula for second degree equation
             const float a = vx1 * vx1 + vy1 * vy1 + vz1 * vz1;
             float distance;
-            for (unsigned int s = 0; s < scene->objects_count; s++) {
+            for (unsigned int s = 0; s < scene->sphere_count; s++) {
                 // Prefetch next sphere object
-                if (s < scene->objects_count - 1) {
-                    __builtin_prefetch(&scene->objects[s + 1]);
+                if (s < scene->sphere_count - 1) {
+                    __builtin_prefetch(&scene->spheres[s + 1]);
                 }
-                const SceneObject sphere = scene->objects[s];
+                const Sphere sphere = scene->spheres[s];
 
                 const float b = -2 * (sphere.x * vx1 + sphere.y * vy1 + sphere.z * vz1);
                 const float c = sphere.x * sphere.x + sphere.y * sphere.y + sphere.z * sphere.z - sphere.radius * sphere.radius;
@@ -88,9 +86,15 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
                 }
             }
 
-            map[row + x * 3] = color_red;
-            map[row + x * 3 + 1] = color_green;
-            map[row + x * 3 + 2] = color_blue;
+            if (found) {
+                map[row + x * 3] = scene->sphere_colors[min_index].color_red;
+                map[row + x * 3 + 1] = scene->sphere_colors[min_index].color_green;
+                map[row + x * 3 + 2] = scene->sphere_colors[min_index].color_blue;
+            } else {
+                map[row + x * 3] = scene->background_red;
+                map[row + x * 3 + 1] = scene->background_green;
+                map[row + x * 3 + 2] = scene->background_blue;
+            }
         }
     }
 }

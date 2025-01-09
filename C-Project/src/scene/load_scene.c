@@ -66,38 +66,46 @@ Scene * load_scene(const char* scene_path) {
     //
     // Objects count
     //
-    if (fscanf(file, "OBJ_N %u\n", &scene->objects_count) != 1) {
+    if (fscanf(file, "OBJ_N %u\n", &scene->sphere_count) != 1) {
         printf(LOG_ERROR("Malformed scene file", "Can not read objects number at line 3"));
         fclose(file);
         scene_destroy(scene);
         exit(5);
     }
-    printf("\tObjects count: %u\n", scene->objects_count);
+    printf("\tObjects count: %u\n", scene->sphere_count);
 
     //
     // Objects
     //
     printf(LOG_STEP("Loading scene objects"));
 
-    scene->objects = (SceneObject *)calloc(scene->objects_count, sizeof(struct _SceneObject));
-    if (scene->objects == NULL) {
+    scene->spheres = (Sphere *)calloc(scene->sphere_count, sizeof(struct _Sphere));
+    if (scene->spheres == NULL) {
         printf(LOG_ERROR("Allocation error", "Failed to allocate memory for scene objects."));
         fclose(file);
         scene_destroy(scene);
         exit(6);
     }
 
-    for (unsigned int i = 0; i < scene->objects_count; i++) {
-        if (fscanf(file, "S %f %f %f %f %u %u %u\n", &scene->objects[i].x, &scene->objects[i].y, &scene->objects[i].z, &scene->objects[i].radius, &r, &g, &b) != 7) {
+    scene->sphere_colors = (SphereColor *)calloc(scene->sphere_count, sizeof(struct _SphereColor));
+    if (scene->sphere_colors == NULL) {
+        printf(LOG_ERROR("Allocation error", "Failed to allocate memory for scene object colors."));
+        fclose(file);
+        scene_destroy(scene);
+        exit(6);
+    }
+
+    for (unsigned int i = 0; i < scene->sphere_count; i++) {
+        if (fscanf(file, "S %f %f %f %f %u %u %u\n", &scene->spheres[i].x, &scene->spheres[i].y, &scene->spheres[i].z, &scene->spheres[i].radius, &r, &g, &b) != 7) {
             printf(LOG_ERROR("Malformed scene file", "Can not read object %u."), i + 1);
             fclose(file);
             scene_destroy(scene);
             exit(5);
         }
         // Same code logic as in background code.
-        scene->objects[i].color_red = r <= 255 ? (uint8_t)r : 255;
-        scene->objects[i].color_green = g <= 255 ? (uint8_t)g : 255;
-        scene->objects[i].color_blue = b <= 255 ? (uint8_t)b : 255;
+        scene->sphere_colors[i].color_red = r <= 255 ? (uint8_t)r : 255;
+        scene->sphere_colors[i].color_green = g <= 255 ? (uint8_t)g : 255;
+        scene->sphere_colors[i].color_blue = b <= 255 ? (uint8_t)b : 255;
     }
 
     fclose(file);

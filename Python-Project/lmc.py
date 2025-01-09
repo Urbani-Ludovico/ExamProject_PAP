@@ -81,7 +81,7 @@ class Lmc(object):
         elif code == 2:
             self._accumulator -= self._memory[addr]
             if self._accumulator < 0:
-                self._accumulator = 1000 - self._accumulator
+                self._accumulator = 1000 + self._accumulator
                 self._flag = True
             else:
                 self._flag = False

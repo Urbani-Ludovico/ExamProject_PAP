@@ -15,7 +15,7 @@ class Assembler(object):
         # Compile success. It is used if another program capture compile exception without exit
         self.success = None
 
-        self._lmc_memory = [0] * 100 # Init Lmc memory to zero
+        self._lmc_memory = [0] * 100  # Init Lmc memory to zero
         self._available_addresses = {}
 
         if self._verbose:
@@ -191,4 +191,3 @@ class AssemblerMissingAddressError(Exception):
 
 class AssemblerWrongAddressError(Exception):
     pass
-

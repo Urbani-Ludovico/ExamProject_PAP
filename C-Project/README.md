@@ -24,6 +24,10 @@ build/main tests/t1.txt tests/t1_1920x1080.ppm 1920 1080
 | main   | Compile project |
 | test   | Run all tests   |
 
+## Implementation notes
+
+If available the program uses AVX2 vectorialiation.
+
 ## Errors
 
 | Error code | Type                 | Description                        |

@@ -2,6 +2,7 @@ def operation_logger(func):
     """
     Logger for __iter__ function. Logs only if the variable _track_operations is true.
     """
+
     def wrapper(self):
         if self._track_operations:
             self._log_operations.append(self._memory[self._program_counter])

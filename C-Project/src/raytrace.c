@@ -109,8 +109,8 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
                 for (unsigned int i = 0; i < 8 && sb + i < scene->sphere_count; i++) {
                     // I expect that it's greather the number of sphere that do not intersect ray
                     if (__builtin_expect(distances[i] < min_distance, 0)) {
-                        min_distance = distances[i]; \
-                        min_index = sb + i; \
+                        min_distance = distances[i];
+                        min_index = sb + i;
                     }
                 }
             }

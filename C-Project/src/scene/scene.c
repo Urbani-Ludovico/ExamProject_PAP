@@ -19,7 +19,16 @@ int scene_init(Scene** scene) {
         return 6;
     }
 
+    #ifdef __AVX2__
+    (*scene)->sphere_total_count = 0;
+    (*scene)->sphere_x = NULL;
+    (*scene)->sphere_y = NULL;
+    (*scene)->sphere_z = NULL;
+    (*scene)->sphere_r = NULL;
+    #else
     (*scene)->spheres = NULL;
+    #endif
+
     (*scene)->sphere_count = 0;
 
     return 0;
@@ -29,9 +38,25 @@ int scene_init(Scene** scene) {
 void scene_destroy(Scene* scene) {
     printf(LOG_STEP("Destroying scene"));
     if (scene != NULL) {
+        #ifdef __AVX2__
+        if (scene->sphere_x != NULL) {
+            free(scene->sphere_x);
+        }
+        if (scene->sphere_y != NULL) {
+            free(scene->sphere_y);
+        }
+        if (scene->sphere_z != NULL) {
+            free(scene->sphere_z);
+        }
+        if (scene->sphere_r != NULL) {
+            free(scene->sphere_r);
+        }
+        #else
         if (scene->spheres != NULL) {
             free(scene->spheres);
         }
+        #endif
+
         if (scene->sphere_colors != NULL) {
             free(scene->sphere_colors);
         }

@@ -1,7 +1,8 @@
 
 COMPILER = gcc
 COMPILER_ERROR_FLAGS = -Wall -Wextra -Wpedantic -Werror
-COMPILER_FLAGS = -O3 -std=gnu2x ${COMPILER_ERROR_FLAGS}
+COMPILER_EXTENSIONS = -fopenmp -lm -mavx2
+COMPILER_FLAGS = -O3 -std=gnu2x -march=native ${COMPILER_ERROR_FLAGS} ${COMPILER_EXTENSIONS}
 
 #
 # COMPILE
@@ -10,7 +11,7 @@ COMPILER_FLAGS = -O3 -std=gnu2x ${COMPILER_ERROR_FLAGS}
 all: build/main
 
 build/main: build/includes/main.o build/includes/argv_tools.o build/includes/load_scene.o build/includes/ppm.o build/includes/raytrace.o build/includes/scene.o
-	${COMPILER} ${COMPILER_FLAGS} $^ -o $@ -fopenmp -lm
+	${COMPILER} ${COMPILER_FLAGS} $^ -o $@
 
 build/includes/argv_tools.o: src/tools/argv_tools.c src/tools/argv_tools.h src/tools/logs.h
 	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@
@@ -25,7 +26,7 @@ build/includes/ppm.o: src/image/ppm.c src/image/ppm.h src/tools/argv_tools.h src
 	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@
 
 build/includes/raytrace.o: src/raytrace.c src/raytrace.h src/scene/scene.h src/tools/argv_tools.h src/tools/logs.h
-	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@ -fopenmp
+	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@
 
 build/includes/scene.o: src/scene/scene.c src/scene/scene.h src/tools/logs.h
 	${COMPILER} -c ${COMPILER_FLAGS} $< -o $@

@@ -12,7 +12,7 @@
 #include "load_scene.h"
 
 
-Scene * load_scene(const char* scene_path) {
+Scene* load_scene(const char* scene_path) {
     //
     // Load file
     //
@@ -27,7 +27,7 @@ Scene * load_scene(const char* scene_path) {
     //
     // Create scene
     //
-    Scene * scene;
+    Scene* scene;
     const int scene_error = scene_init(&scene);
     if (scene_error != 0) {
         fclose(file);
@@ -79,6 +79,19 @@ Scene * load_scene(const char* scene_path) {
     //
     printf(LOG_STEP("Loading scene objects"));
 
+    #ifdef __AVX2__
+    scene->sphere_total_count = scene->sphere_count % 8 == 0 ? scene->sphere_count : (8 * ((scene->sphere_count + 8) / 8));
+    scene->sphere_x = (float*)calloc(scene->sphere_total_count, sizeof(float));
+    scene->sphere_y = (float*)calloc(scene->sphere_total_count, sizeof(float));
+    scene->sphere_z = (float*)calloc(scene->sphere_total_count, sizeof(float));
+    scene->sphere_r = (float*)calloc(scene->sphere_total_count, sizeof(float));
+    if (scene->sphere_x == NULL || scene->sphere_y == NULL || scene->sphere_z == NULL || scene->sphere_r == NULL) {
+        printf(LOG_ERROR("Allocation error", "Failed to allocate memory for sphere coordinates."));
+        fclose(file);
+        scene_destroy(scene);
+        exit(6);
+    }
+    #else
     scene->spheres = (Sphere *)calloc(scene->sphere_count, sizeof(struct _Sphere));
     if (scene->spheres == NULL) {
         printf(LOG_ERROR("Allocation error", "Failed to allocate memory for scene objects."));
@@ -86,8 +99,9 @@ Scene * load_scene(const char* scene_path) {
         scene_destroy(scene);
         exit(6);
     }
+    #endif
 
-    scene->sphere_colors = (SphereColor *)calloc(scene->sphere_count, sizeof(struct _SphereColor));
+    scene->sphere_colors = (SphereColor*)calloc(scene->sphere_count, sizeof(struct _SphereColor));
     if (scene->sphere_colors == NULL) {
         printf(LOG_ERROR("Allocation error", "Failed to allocate memory for scene object colors."));
         fclose(file);
@@ -96,12 +110,22 @@ Scene * load_scene(const char* scene_path) {
     }
 
     for (unsigned int i = 0; i < scene->sphere_count; i++) {
+        #ifdef __AVX2__
+        if (fscanf(file, "S %f %f %f %f %u %u %u\n", &scene->sphere_x[i], &scene->sphere_y[i], &scene->sphere_z[i], &scene->sphere_r[i], &r, &g, &b) != 7) {
+            printf(LOG_ERROR("Malformed scene file", "Can not read object %u."), i + 1);
+            fclose(file);
+            scene_destroy(scene);
+            exit(5);
+        }
+        #else
         if (fscanf(file, "S %f %f %f %f %u %u %u\n", &scene->spheres[i].x, &scene->spheres[i].y, &scene->spheres[i].z, &scene->spheres[i].radius, &r, &g, &b) != 7) {
             printf(LOG_ERROR("Malformed scene file", "Can not read object %u."), i + 1);
             fclose(file);
             scene_destroy(scene);
             exit(5);
         }
+        #endif
+
         // Same code logic as in background code.
         scene->sphere_colors[i].color_red = r <= 255 ? (uint8_t)r : 255;
         scene->sphere_colors[i].color_green = g <= 255 ? (uint8_t)g : 255;

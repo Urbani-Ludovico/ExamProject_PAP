@@ -68,7 +68,6 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
 
             float min_distance = FLT_MAX;
             unsigned int min_index = 0;
-            float distance;
 
             // a, b, c and delta are the parameters of the formula for second degree equation
             const float a = vx1 * vx1 + vy1 * vy1 + vz1 * vz1;
@@ -82,32 +81,41 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
                 const __m256 z_vec = _mm256_loadu_ps(&scene->sphere_z[sb]);
                 const __m256 r_vec = _mm256_loadu_ps(&scene->sphere_r[sb]);
 
-                // -2 * (x * vx1 + y * vy1 + z * vz1);
-                __m256 b = _mm256_mul_ps(_mm256_add_ps(_mm256_add_ps(_mm256_mul_ps(x_vec, _mm256_set1_ps(vx1)), _mm256_mul_ps(y_vec, _mm256_set1_ps(vy1))), _mm256_mul_ps(z_vec, _mm256_set1_ps(vz1))), _mm256_set1_ps(-2));
+                // 2 * (x * vx1 + y * vy1 + z * vz1); (with 2 insted of -2, I don't need to do -b in future)
+                __m256 b = _mm256_mul_ps(_mm256_add_ps(_mm256_add_ps(_mm256_mul_ps(x_vec, _mm256_set1_ps(vx1)), _mm256_mul_ps(y_vec, _mm256_set1_ps(vy1))), _mm256_mul_ps(z_vec, _mm256_set1_ps(vz1))), _mm256_set1_ps(2));
                 // (x^2 + y^2) + (x^2 - r^y)
                 __m256 c = _mm256_add_ps(_mm256_add_ps(_mm256_mul_ps(x_vec, x_vec), _mm256_mul_ps(y_vec, y_vec)), _mm256_sub_ps(_mm256_mul_ps(z_vec, z_vec), _mm256_mul_ps(r_vec, r_vec)));
                 // b^2 - 4 * a * c
                 __m256 delta = _mm256_sub_ps(_mm256_mul_ps(b, b), _mm256_mul_ps(c, _mm256_set1_ps(4 * a)));
 
-                float b1[8], delta1[8];
-                _mm256_storeu_ps(b1, b);
-                _mm256_storeu_ps(delta1, delta);
+                // delta1 > -FLOAT_TOLLERANCE
+                const __m256 delta_more_negative_tollerance = _mm256_cmp_ps(delta, _mm256_set1_ps(-FLOAT_TOLLERANCE), _CMP_GT_OS);
+                // delta1 > FLOAT_TOLLERANCE
+                const __m256 delta_more_tollerance = _mm256_cmp_ps(delta, _mm256_set1_ps(FLOAT_TOLLERANCE), _CMP_GE_OS);
+
+                // Compute all distances
+                // I use the bit mask _mm256_castsi256_ps(_mm256_set1_epi32(0x7FFFFFFF)) with all bit 1 except sign to make absolute value
+                const __m256 distance_delta_zero = _mm256_and_ps(_mm256_div_ps(b, _mm256_set1_ps(2 * a)), _mm256_castsi256_ps(_mm256_set1_epi32(0x7FFFFFFF)));
+                const __m256 distance_delta_positive1 = _mm256_and_ps(_mm256_div_ps(_mm256_sub_ps(b, _mm256_sqrt_ps(delta)), _mm256_set1_ps(2 * a)), _mm256_castsi256_ps(_mm256_set1_epi32(0x7FFFFFFF)));
+                const __m256 distance_delta_positive2 = _mm256_and_ps(_mm256_div_ps(_mm256_add_ps(b, _mm256_sqrt_ps(delta)), _mm256_set1_ps(2 * a)), _mm256_castsi256_ps(_mm256_set1_epi32(0x7FFFFFFF)));
+
+                const __m256 distances_vect = _mm256_blendv_ps(_mm256_blendv_ps(_mm256_set1_ps(FLT_MAX), distance_delta_zero, delta_more_negative_tollerance), _mm256_min_ps(distance_delta_positive1, distance_delta_positive2), delta_more_tollerance);
+                float distances[8];
+                _mm256_storeu_ps(distances, distances_vect);
 
                 // Iterate on 8 values of the array
                 for (unsigned int i = 0; i < 8 && sb + i < scene->sphere_count; i++) {
-                    unsigned int s = sb + i;
                     // Considering floating point errors I use abs(delta) < epsilow instead of delta == 0
                     // I expect that it's greather the number of sphere that do not intersect ray
-                    if (__builtin_expect(delta1[i] > -FLOAT_TOLLERANCE && delta1[i] < FLOAT_TOLLERANCE, 0)) {
-                        SPHERE_CHECK_DISTANCE(-b1[i] - 2 * a)
-                    } else if (__builtin_expect(delta1[i] > 0, 0)) {
-                        SPHERE_CHECK_DISTANCE((-b1[i] - (float)sqrt((double)delta1[i])) / (2 * a))
-                        SPHERE_CHECK_DISTANCE((-b1[i] + (float)sqrt((double)delta1[i])) / (2 * a))
+                    if (__builtin_expect(distances[i] < min_distance, 0)) {
+                        min_distance = distances[i]; \
+                        min_index = sb + i; \
                     }
                 }
             }
 
             #else
+            float distance;
             for (unsigned int s = 0; s < scene->sphere_count; s++) {
                 // Prefetch next sphere object
                 if (s < scene->sphere_count - 1) {
@@ -121,11 +129,11 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
                 const float delta = b * b - 4 * a * c;
                 // Considering floating point errors I use abs(delta) < epsilow instead of delta == 0
                 // I expect that it's greather the number of sphere that do not intersect ray
-                if (__builtin_expect(delta > -FLOAT_TOLLERANCE && delta < FLOAT_TOLLERANCE, 0)) {
-                    SPHERE_CHECK_DISTANCE(-b - 2 * a)
-                } else if (__builtin_expect(delta > 0, 0)) {
+                if (__builtin_expect(delta > FLOAT_TOLLERANCE, 0)) {
                     SPHERE_CHECK_DISTANCE((-b - (float)sqrt((double)delta)) / (2 * a))
                     SPHERE_CHECK_DISTANCE((-b + (float)sqrt((double)delta)) / (2 * a))
+                } else if (__builtin_expect(delta > -FLOAT_TOLLERANCE, 0)) {
+                    SPHERE_CHECK_DISTANCE(-b / 2 * a)
                 }
             }
             #endif

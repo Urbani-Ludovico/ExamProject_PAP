@@ -16,6 +16,7 @@ struct _SphereColor {
 typedef struct _SphereColor SphereColor;
 
 #ifdef __AVX2__
+// If intrinsics available I use arrays of coordinates insted of array of structs
 struct _Scene {
     float viewport_x;
     float viewport_y;

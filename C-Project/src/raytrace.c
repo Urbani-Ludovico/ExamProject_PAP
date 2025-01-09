@@ -73,6 +73,7 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
             // a, b, c and delta are the parameters of the formula for second degree equation
             const float a = vx1 * vx1 + vy1 * vy1 + vz1 * vz1;
 
+            // Use SIMD optimization with AVX2 intrinsics (if available)
             #ifdef __AVX2__
             for (unsigned int sb = 0; sb < scene->sphere_total_count; sb += 8) {
                 // Load data of 8 spheres into vector of 8 floats with intrinsics
@@ -81,21 +82,27 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
                 const __m256 z_vec = _mm256_loadu_ps(&scene->sphere_z[sb]);
                 const __m256 r_vec = _mm256_loadu_ps(&scene->sphere_r[sb]);
 
+                // -2 * (x * vx1 + y * vy1 + z * vz1);
                 __m256 b = _mm256_mul_ps(_mm256_add_ps(_mm256_add_ps(_mm256_mul_ps(x_vec, _mm256_set1_ps(vx1)), _mm256_mul_ps(y_vec, _mm256_set1_ps(vy1))), _mm256_mul_ps(z_vec, _mm256_set1_ps(vz1))), _mm256_set1_ps(-2));
+                // (x^2 + y^2) + (x^2 - r^y)
                 __m256 c = _mm256_add_ps(_mm256_add_ps(_mm256_mul_ps(x_vec, x_vec), _mm256_mul_ps(y_vec, y_vec)), _mm256_sub_ps(_mm256_mul_ps(z_vec, z_vec), _mm256_mul_ps(r_vec, r_vec)));
-
+                // b^2 - 4 * a * c
                 __m256 delta = _mm256_sub_ps(_mm256_mul_ps(b, b), _mm256_mul_ps(c, _mm256_set1_ps(4 * a)));
 
                 float b1[8], delta1[8];
                 _mm256_storeu_ps(b1, b);
                 _mm256_storeu_ps(delta1, delta);
 
+                // Iterate on 8 values of the array
                 for (unsigned int i = 0; i < 8 && sb + i < scene->sphere_count; i++) {
                     unsigned int s = sb + i;
+                    // Considering floating point errors I use abs(delta) < epsilow instead of delta == 0
+                    // I expect that it's greather the number of sphere that do not intersect ray
                     if (__builtin_expect(delta1[i] > -FLOAT_TOLLERANCE && delta1[i] < FLOAT_TOLLERANCE, 0)) {
                         SPHERE_CHECK_DISTANCE(-b1[i] - 2 * a)
                     } else if (__builtin_expect(delta1[i] > 0, 0)) {
                         SPHERE_CHECK_DISTANCE((-b1[i] - (float)sqrt((double)delta1[i])) / (2 * a))
+                        SPHERE_CHECK_DISTANCE((-b1[i] + (float)sqrt((double)delta1[i])) / (2 * a))
                     }
                 }
             }

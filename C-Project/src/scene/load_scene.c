@@ -80,6 +80,8 @@ Scene* load_scene(const char* scene_path) {
     printf(LOG_STEP("Loading scene objects"));
 
     #ifdef __AVX2__
+    // If intrinsics available array of coordinates are multiple of 8
+    // With this method I can load bloacks of 8 floats into vector instructions (empty cells are computed, but value will never read. This empty cells does not cost much in my opinion)
     scene->sphere_total_count = scene->sphere_count % 8 == 0 ? scene->sphere_count : (8 * ((scene->sphere_count + 8) / 8));
     scene->sphere_x = (float*)calloc(scene->sphere_total_count, sizeof(float));
     scene->sphere_y = (float*)calloc(scene->sphere_total_count, sizeof(float));

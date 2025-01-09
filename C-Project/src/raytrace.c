@@ -16,7 +16,7 @@
 
 
 #ifndef FLOAT_TOLLERANCE
-#define FLOAT_TOLLERANCE 1e-6f
+#define FLOAT_TOLLERANCE 1e-6
 #endif
 
 // SPHERE_CHECK_DISTANCE use in if a branchless absolute value
@@ -26,7 +26,6 @@
     if (__builtin_expect(distance * ((distance > 0) - (distance < 0)) < min_distance, 0)) { \
         min_distance = distance; \
         min_index = s; \
-        found = true; \
     }
 #endif
 
@@ -69,7 +68,6 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
 
             float min_distance = FLT_MAX;
             unsigned int min_index = 0;
-            bool found = false;
             float distance;
 
             // a, b, c and delta are the parameters of the formula for second degree equation
@@ -83,7 +81,7 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
                 const __m256 r_vec = _mm256_loadu_ps(&scene->sphere_r[sb]);
 
                 __m256 b = _mm256_mul_ps(_mm256_add_ps(_mm256_add_ps(_mm256_mul_ps(x_vec, _mm256_set1_ps(vx1)), _mm256_mul_ps(y_vec, _mm256_set1_ps(vy1))), _mm256_mul_ps(z_vec, _mm256_set1_ps(vz1))), _mm256_set1_ps(2));
-                __m256 c = _mm256_sub_ps(_mm256_add_ps(_mm256_add_ps(_mm256_mul_ps(x_vec, x_vec), _mm256_mul_ps(y_vec, y_vec)), _mm256_mul_ps(z_vec, z_vec)), _mm256_mul_ps(r_vec, r_vec));
+                __m256 c = _mm256_add_ps(_mm256_add_ps(_mm256_mul_ps(x_vec, x_vec), _mm256_mul_ps(y_vec, y_vec)), _mm256_sub_ps(_mm256_mul_ps(z_vec, z_vec), _mm256_mul_ps(r_vec, r_vec)));
 
                 __m256 delta = _mm256_sub_ps(_mm256_mul_ps(b, b), _mm256_mul_ps(c, _mm256_set1_ps(4 * a)));
 
@@ -91,7 +89,7 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
                 _mm256_storeu_ps(b1, b);
                 _mm256_storeu_ps(delta1, delta);
 
-                for (unsigned int i = 0; i < 8 && (scene->sphere_total_count == scene->sphere_count || i < scene->sphere_total_count - scene->sphere_count); i++) {
+                for (unsigned int i = 0; i < 8 && sb + i < scene->sphere_count; i++) {
                     unsigned int s = sb + i;
                     if (__builtin_expect(delta1[i] > -FLOAT_TOLLERANCE && delta1[i] < FLOAT_TOLLERANCE, 0)) {
                         SPHERE_CHECK_DISTANCE(-b1[i] - 2 * a)
@@ -124,7 +122,7 @@ void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const 
             }
             #endif
 
-            if (found) {
+            if (min_distance != FLT_MAX) {
                 map[row + x * 3] = scene->sphere_colors[min_index].color_red;
                 map[row + x * 3 + 1] = scene->sphere_colors[min_index].color_green;
                 map[row + x * 3 + 2] = scene->sphere_colors[min_index].color_blue;

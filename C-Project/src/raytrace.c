@@ -32,14 +32,6 @@
     }
 #endif
 
-typedef float v4f __attribute__((vector_size(16)));
-typedef int v4i __attribute__((vector_size(16)));
-v4i v4f_abs = {0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF};
-
-typedef float v8f __attribute__((vector_size(32)));
-typedef int v8i __attribute__((vector_size(32)));
-v8i v8f_abs = {0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF};
-
 
 void raytrace(uint8_t* map, Scene* scene, const image_size_t image_width, const image_size_t image_height) {
     printf(LOG_STEP("Raytrace started"));
